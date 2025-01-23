@@ -1,0 +1,100 @@
+{
+    "TESTS_PARAM": [
+      {
+        "JOB": {
+          "GENERATOR": "main",
+          "TEST_NAME": "AuthorizationTest"
+        },
+        "PROFILE": [
+          {
+            "THREAD_GROUP_NAME": "AuthorizationTest",
+            "SCRIPT_EXECUTION_TIME": 5,
+            "PACING_MULTIPLIER": 3,
+            "STEPS": [
+              {
+                "TPS": 1.0,
+                "RAMP_TIME": 0.5,
+                "HOLD_TIME": 5.0
+              },
+              {
+                "TPS": 2.0,
+                "RAMP_TIME": 0.5,
+                "HOLD_TIME": 5.0
+              }
+            ]
+          }
+        ],
+        "PROPERTIES": {
+          "REDIS_CLIENT_HOST": "192.168.31.252"
+        }
+      },
+      {
+        "JOB": {
+          "GENERATOR": "main",
+          "TEST_NAME": "RegistrationTest"
+        },
+        "PROFILE": [
+          {
+            "THREAD_GROUP_NAME": "RegistrationTest",
+            "SCRIPT_EXECUTION_TIME": 5,
+            "PACING_MULTIPLIER": 3,
+            "STEPS": [
+              {
+                "TPS": 1.0,
+                "RAMP_TIME": 0.5,
+                "HOLD_TIME": 5.0
+              },
+              {
+                "TPS": 2.0,
+                "RAMP_TIME": 0.5,
+                "HOLD_TIME": 5.0
+              }
+            ]
+          }
+        ],
+        "PROPERTIES": {
+          "REDIS_CLIENT_HOST": "localhost"
+        }
+      },
+      {
+        "JOB": {
+          "GENERATOR": "main",
+          "TEST_NAME": "UploadingAvatarTest"
+        },
+        "PROFILE": [
+          {
+            "THREAD_GROUP_NAME": "UploadingAvatarTest",
+            "SCRIPT_EXECUTION_TIME": 5,
+            "PACING_MULTIPLIER": 3,
+            "STEPS": [
+              {
+                "TPS": 1.0,
+                "RAMP_TIME": 0.5,
+                "HOLD_TIME": 5.0
+              },
+              {
+                "TPS": 2.0,
+                "RAMP_TIME": 0.5,
+                "HOLD_TIME": 5.0
+              }
+            ]
+          }
+        ],
+        "PROPERTIES": {
+          "REDIS_CLIENT_HOST": "localhost"
+        }
+      }
+    ],
+    "COMMON_SETTINGS": {
+        "JMX": {
+          "MODULE_NAME": "MODULE_ONE",
+          "PERCENT_PROFILE": 100.0,
+          "TEST_FOLDER_PATH": "/home/main/test"
+        },
+        "PROPERTIES": {
+          "INFLUXDB_HOST": "localhost",
+          "API_GATEWAY": "localhost",
+          "WAIT": "0"
+        }
+      }
+  }

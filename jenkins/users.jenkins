@@ -1,0 +1,247 @@
+#!groovy
+
+import java.text.SimpleDateFormat
+
+def testGenSet = [] as Set
+def moduleName = ''
+def logPath = ''
+
+class JMeterJmx {
+    String TEST_FOLDER_PATH
+    String MODULE_NAME
+    Double PERCENT_PROFILE = 100.0
+}
+
+class CommonSettings {
+    JMeterJmx JMX
+    Map PROPERTIES
+}
+
+class Job {
+    String GENERATOR
+    String TEST_NAME
+}
+
+class Steps {
+    Double TPS
+    Double RAMP_TIME
+    Double HOLD_TIME
+}
+
+class Profile {
+    String THREAD_GROUP_NAME
+    Integer SCRIPT_EXECUTION_TIME
+    Integer PACING_MULTIPLIER
+    Steps[] STEPS
+}
+
+class Settings {
+    Job JOB
+    Profile[] PROFILE
+    Map PROPERTIES
+}
+
+class CreateScript {
+    def private static int getThreads(Double rps, Double throughput) {
+        double pacing = (1 / throughput) * 60;
+        double requiredIntensityPerMinutes = rps * 60;
+        return (int) Math.ceil(requiredIntensityPerMinutes / (60 / pacing));
+    }
+
+    def private static double getThroughputPerMinute(Double rps, Integer scriptExecutionTime, Integer pacingMultiplier) {
+        double pacing = scriptExecutionTime * pacingMultiplier;
+        double requiredIntensityPerMinutes = rps * 60;
+        int threads = (int) Math.ceil(requiredIntensityPerMinutes / (60 / pacing));
+        double executionTime = threads / rps;
+        double scale = Math.pow(10, 3);
+        return Math.ceil(60 / executionTime * scale) / scale;
+    }
+
+    def private static getProperties(Map propertiesMap) {
+        StringBuilder jmeterPropertiesString = new StringBuilder()
+
+        def propertiesList = propertiesMap.collect { key, value -> "-J${key}=${value}" }
+        jmeterPropertiesString.append(propertiesList.join(' '))
+
+        return jmeterPropertiesString.toString()
+    }
+
+    def private static getProfile(Steps[] steps, Double throughput, Double percentProfile) {
+        Integer initialDelay = 0
+        StringBuilder spawns = new StringBuilder()
+
+        steps.each { step ->
+            def threads = getThreads(step.TPS * percentProfile, throughput)
+            spawns.append("spawn(${threads},${initialDelay}s,${(int) (step.RAMP_TIME * 60)}s,${(int) (step.HOLD_TIME * 60)}s,${(int) (step.RAMP_TIME * 60)}s) ")
+            initialDelay += step.RAMP_TIME * 60 + step.HOLD_TIME * 60
+        }
+
+        return spawns.toString()
+    }
+
+    def public static createScript(CommonSettings commonSettings, Settings settings) {
+        def percentProfile = commonSettings.JMX.PERCENT_PROFILE / 100.0
+        def throughput = getThroughputPerMinute(
+                settings.PROFILE[0].STEPS[0].TPS,
+                settings.PROFILE[0].SCRIPT_EXECUTION_TIME,
+                settings.PROFILE[0].PACING_MULTIPLIER
+        )
+
+        String script =
+                "cd ${commonSettings.JMX.TEST_FOLDER_PATH};\n" +
+                        "rm -rf logs/* report_html/*;\n" +
+                        "sudo ./JMeter/bin/jmeter -n -t ./${commonSettings.JMX.MODULE_NAME}/${settings.PROFILE[0].THREAD_GROUP_NAME}.jmx " +
+                        "-l ./logs/${settings.PROFILE[0].THREAD_GROUP_NAME}.jtl -e -o ./report_html/${settings.PROFILE[0].THREAD_GROUP_NAME} " +
+                        "${getProperties(commonSettings.PROPERTIES)} ${getProperties(settings.PROPERTIES)} " +
+                        "-Jthreads_schedule='${getProfile(settings.PROFILE[0].STEPS, throughput, percentProfile)}' " +
+                        "-JTHROUGHPUT_TIMER=${throughput}"
+
+        return script
+    }
+}
+
+// Вывод времени когда тест начался, когда закончится, длительность, время для графаны
+def testDuration(Integer wait, Steps[] stepsProfile) {
+    SimpleDateFormat sdfDateTime = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy")
+    sdfDateTime.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+
+    int durationProfile = stepsProfile.inject(0) { acc, step ->
+        acc + (step.RAMP_TIME + step.HOLD_TIME) * 60
+    } as int
+
+    def calendarStartRumUp = Calendar.getInstance()
+    calendarStartRumUp.add(Calendar.SECOND, wait)
+    def calendarStart = Calendar.getInstance()
+    calendarStart.add(Calendar.SECOND, wait)
+    calendarStart.add(Calendar.SECOND, stepsProfile[0].RAMP_TIME * 60 as int)
+    def calendarEnd = Calendar.getInstance()
+    calendarEnd.add(Calendar.SECOND, wait)
+    calendarEnd.add(Calendar.SECOND, durationProfile)
+    def diffInMillis = calendarEnd.getTimeInMillis() - calendarStartRumUp.getTimeInMillis()
+
+    long diffInSeconds = (long) (diffInMillis / 1000)
+    long diffInMinutes = (long) (diffInSeconds / 60)
+    long diffInHours = (long) (diffInMinutes / 60)
+    long diffInDays = (long) (diffInHours / 24)
+
+    String delimiter = "|-----------------------------------------------------------|\n"
+    String testStartTime = "|  Test Start Time:    ${sdfDateTime.format(calendarStartRumUp.getTime())}"
+    String testEndTime = "|  Test End Time:      ${sdfDateTime.format(calendarEnd.getTime())}"
+    String testDuration = "|  Test Duration:      ${diffInDays}d ${diffInHours % 24}h:${diffInMinutes % 60}m:${diffInSeconds % 60}s"
+    String grafanaRumUp = "|  Grafana (RumUp):    from=${calendarStartRumUp.getTime().getTime()}&to=${calendarEnd.getTime().getTime()}"
+    String grafana = "|  Grafana:            from=${calendarStart.getTime().getTime()}&to=${calendarEnd.getTime().getTime()}"
+
+    echo delimiter +
+            testStartTime + ' ' * (delimiter.size() - testStartTime.size() - 2) + '|\n' + delimiter +
+            testEndTime + ' ' * (delimiter.size() - testEndTime.size() - 2) + '|\n' + delimiter +
+            testDuration + ' ' * (delimiter.size() - testDuration.size() - 2) + '|\n' + delimiter +
+            grafanaRumUp + ' ' * (delimiter.size() - grafana.size() - 2) + '|\n' + delimiter +
+            grafana + ' ' * (delimiter.size() - grafana.size() - 2) + '|\n' + delimiter
+}
+
+// Загружаем логи на генератор
+def uploadingGenLog(logPath, logFolder, moduleName) {
+    SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
+    sdfDateTime.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"))
+    String nowDateTime = sdfDateTime.format(new Date())
+    String archiveName = "${moduleName}_${nowDateTime}.tar"
+
+    sshagent(credentials: [env.CREDENTIAL]) {
+        sh "tar -cvf ${archiveName} ${logPath}"
+        sh "ssh -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' ${env.USERNAME}@${env.GENERATOR_LOGS} 'mkdir -p ${logFolder}'"
+        sh "scp -rp ${archiveName} ${env.USERNAME}@${env.GENERATOR_LOGS}:${logFolder}"
+    }
+}
+
+// Скачивание логов с генератора в домашнюю директорию hitachi_client
+def downloadJenkinsLog(logPath, logFolder, generator) {
+    try {
+        sshagent(credentials: [env.CREDENTIAL]) {
+            sh "scp -r ${env.USERNAME}@${generator}:${logPath}/* ${logFolder}"
+        }
+    } catch (Exception e) {
+        echo "ERROR: ${e.toString()}"
+    }
+}
+
+pipeline {
+    agent any
+    parameters {
+        text(name: 'JSON', description: 'JSON с параметрами запуска', defaultValue: '')
+    }
+
+    environment {
+        // Креды пользователя для подключения по ssh и scp
+        USERNAME = ''
+        CREDENTIAL = ''
+        GENERATOR_LOGS = 'localhost'
+    }
+
+    stages {
+        // Запуск тестов
+        stage("Starting Tests") {
+            when {
+                expression { params.JSON != '' }
+            }
+            steps {
+                script {
+                    Map<String, List<Object>> testsScripts = [:]
+                    def TESTS_PARAM = readJSON text: params.JSON
+                    CommonSettings commonSettings = new CommonSettings(TESTS_PARAM.COMMON_SETTINGS)
+                    moduleName = commonSettings.JMX.MODULE_NAME
+                    logPath = "${commonSettings.JMX.TEST_FOLDER_PATH}/${commonSettings.JMX.MODULE_NAME}/"
+
+                    TESTS_PARAM.TESTS_PARAM.eachWithIndex { testParam, index ->
+                        Settings settings = new Settings(testParam)
+                        testGenSet.add(settings.JOB.GENERATOR)
+
+                        Integer wait = commonSettings.PROPERTIES['WAIT'].toInteger()
+                        for (Profile profile in settings.PROFILE) {
+                            testDuration(wait, profile.STEPS)
+                        }
+
+                        String generator = settings.JOB.GENERATOR
+                        String testName = "Module: ${commonSettings.JMX.MODULE_NAME} Test: ${settings.JOB.TEST_NAME} #${index + 1}"
+                        String script = CreateScript.createScript(commonSettings, settings)
+                        echo "${testName}:\n${script}"
+                        def scriptName = "${commonSettings.JMX.MODULE_NAME}_${index + 1}.sh"
+                        writeFile file: scriptName, text: script
+
+                        if (!testsScripts.containsKey(generator))
+                            testsScripts[generator] = []
+
+                        testsScripts[generator] << [testName: testName, scriptName: scriptName]
+                    }
+
+                    def parallelTasks = [:]
+                    testsScripts.each { generator, testsParam ->
+                        parallelTasks[generator] = {
+                            // Если надо запустить на нодах
+                            // node(generator) {
+                            def parallelStages = testsParam.collectEntries {
+                                [(it): {
+                                    stage(it.testName) {
+                                        sh "bash ${it.scriptName}"
+                                    }
+                                }]
+                            }
+                            parallel parallelStages
+                            // }
+                        }
+                    }
+                    parallel parallelTasks
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                archiveArtifacts artifacts: 'target/gatling/**', allowEmptyArchive: true
+                sh 'rm -rf target/gatling/*'
+                deleteDir()
+            }
+        }
+    }
+}
