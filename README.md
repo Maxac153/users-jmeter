@@ -99,7 +99,7 @@ jmeter -n -t ./MODULE_ONE/AuthorizationTest.jmx
        -l ./AuthorizationTest.jtl 
        -e -o ./AuthorizationTest 
        -JAPP_GATEWAY=localhost -JINFLUXDB_HOST=localhost -JREDIS_CLIENT_URL=localhost -JWAIT=0
-       -Jthreads_schedule='spawn(15,0s,30s,300s,30s) spawn(30,330s,30s,300s,30s) ' -JTHROUGHPUT_TIMER=4.0
+       -Jthreads_schedule='spawn(15,0s,30s,300s,30s) spawn(30,330s,30s,300s,30s)' -JTHROUGHPUT_TIMER=4.0
 ```
 
 ## Настройка STS
