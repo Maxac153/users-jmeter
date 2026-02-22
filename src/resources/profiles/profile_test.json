@@ -5,7 +5,7 @@
         "LOAD_GENERATOR": "localhost"
       },
       "PROFILE": {
-        "PACING": 3,
+        "PACING": 15,
         "STEPS": [
           {
             "TPS": 1.0,
@@ -29,10 +29,15 @@
         "LOAD_GENERATOR": "localhost"
       },
       "PROFILE": {
-        "PACING": 10,
+        "PACING": 15,
         "STEPS": [
           {
             "TPS": 0.1,
+            "RAMP_TIME": 1,
+            "HOLD_TIME": 3
+          },
+          {
+            "TPS": 0.5,
             "RAMP_TIME": 1,
             "HOLD_TIME": 3
           }
@@ -48,7 +53,7 @@
         "LOAD_GENERATOR": "localhost"
       },
       "PROFILE": {
-        "PACING": 10,
+        "PACING": 15,
         "STEPS": [
           {
             "TPS": 0.1,
@@ -79,6 +84,7 @@
       "SYSTEM_NAME": "users",
       "LEVEL_CONSOLE_LOG": "INFO",
       "LEVEL_FILE_LOG": "INFO",
+      "DATASOURCE_PROTOCOL": "http",
       "DATASOURCE_HOST": "localhost",
       "DATASOURCE_PORT": 8086,
       "PERCENT_PROFILE": 100

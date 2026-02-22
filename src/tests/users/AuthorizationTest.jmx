@@ -3,73 +3,7 @@
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan">
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
-        <collectionProp name="Arguments.arguments">
-          <elementProp name="APP_PROTOCOL" elementType="Argument">
-            <stringProp name="Argument.name">APP_PROTOCOL</stringProp>
-            <stringProp name="Argument.value">${__P(APP_PROTOCOL,http)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="APP_HOST" elementType="Argument">
-            <stringProp name="Argument.name">APP_HOST</stringProp>
-            <stringProp name="Argument.value">${__P(APP_HOST,users.bugred.ru)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="APP_PORT" elementType="Argument">
-            <stringProp name="Argument.name">APP_PORT</stringProp>
-            <stringProp name="Argument.value">${__P(APP_PORT,80)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="ENCODING" elementType="Argument">
-            <stringProp name="Argument.name">ENCODING</stringProp>
-            <stringProp name="Argument.value">${__P(ENCODING,UTF-8)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="INFLUXDB_PROTOCOL" elementType="Argument">
-            <stringProp name="Argument.name">INFLUXDB_PROTOCOL</stringProp>
-            <stringProp name="Argument.value">${__P(INFLUXDB_PROTOCOL,http)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="INFLUXDB_HOST" elementType="Argument">
-            <stringProp name="Argument.name">INFLUXDB_HOST</stringProp>
-            <stringProp name="Argument.value">${__P(INFLUXDB_HOST,localhost)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="INFLUXDB_PORT" elementType="Argument">
-            <stringProp name="Argument.name">INFLUXDB_PORT</stringProp>
-            <stringProp name="Argument.value">${__P(INFLUXDB_PORT,8086)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="INFLUXDB_DATABASE" elementType="Argument">
-            <stringProp name="Argument.name">INFLUXDB_DATABASE</stringProp>
-            <stringProp name="Argument.value">${__P(INFLUXDB_DATABASE,jmeterdb)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="APP_NAME" elementType="Argument">
-            <stringProp name="Argument.name">APP_NAME</stringProp>
-            <stringProp name="Argument.value">${__P(APP_NAME,users)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="INFLUXDB_MEASUREMENT" elementType="Argument">
-            <stringProp name="Argument.name">INFLUXDB_MEASUREMENT</stringProp>
-            <stringProp name="Argument.value">${__P(INFLUXDB_MEASUREMENT,jmeter)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="REDIS_CLIENT_HOST" elementType="Argument">
-            <stringProp name="Argument.name">REDIS_CLIENT_HOST</stringProp>
-            <stringProp name="Argument.value">${__P(REDIS_CLIENT_HOST,0.0.0.0)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="PROFILE_ONE" elementType="Argument">
-            <stringProp name="Argument.name">PROFILE_ONE</stringProp>
-            <stringProp name="Argument.value">spawn(5,1s,1s,1s,1s) spawn(20,1s,3s,1s,2s)</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="PROFILE_TWO" elementType="Argument">
-            <stringProp name="Argument.name">PROFILE_TWO</stringProp>
-            <stringProp name="Argument.value">spawn(5,1s,1s,1s,1s) spawn(20,1s,3s,1s,2s)</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-        </collectionProp>
+        <collectionProp name="Arguments.arguments"/>
       </elementProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
@@ -119,10 +53,10 @@
       </CacheManager>
       <hashTree/>
       <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
-        <stringProp name="HTTPSampler.domain">${APP_HOST}</stringProp>
-        <stringProp name="HTTPSampler.port">${APP_PORT}</stringProp>
-        <stringProp name="HTTPSampler.protocol">${APP_PROTOCOL}</stringProp>
-        <stringProp name="HTTPSampler.contentEncoding">${ENCODING}</stringProp>
+        <stringProp name="HTTPSampler.domain">${__P(APP_HOST,users.bugred.ru)}</stringProp>
+        <stringProp name="HTTPSampler.port">${__P(APP_PORT,80)}</stringProp>
+        <stringProp name="HTTPSampler.protocol">${__P(APP_PROTOCOL,http)}</stringProp>
+        <stringProp name="HTTPSampler.contentEncoding">${__P(ENCODING,UTF-8)}</stringProp>
         <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
           <collectionProp name="Arguments.arguments"/>
         </elementProp>
@@ -407,7 +341,16 @@ def producerTest = new KafkaProducer&lt;String, String&gt;(kafkaProperties)
 props.put(&quot;PRODUCRE_TEST&quot;, producerTest)</stringProp>
         </JSR223Sampler>
         <hashTree/>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Calc Profile">
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Clear Properties" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="script">props.clear()
+log.info(&quot;JMeter Clear Props And Vars&quot;)</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Calc Profile" enabled="true">
           <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
@@ -415,7 +358,6 @@ props.put(&quot;PRODUCRE_TEST&quot;, producerTest)</stringProp>
           <stringProp name="script">import groovy.json.JsonSlurper
 
 
-// Функция расчёта пейсинга
 def getStepPace(double tps, double pacing) {
 	double pace = 1 / tps
 	
@@ -429,7 +371,7 @@ def getStepPace(double tps, double pacing) {
 }
 
 def debugEnable = System.getProperty(&quot;DEBUG_ENABLE&quot;, &quot;false&quot;) as Boolean
-def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profile/profile_test.json&quot;)
+def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/profile_test.json&quot;)
 
 def profileJsonFile = new File(profilePath)
 def jsonObject = new JsonSlurper().parse(profileJsonFile)
@@ -437,10 +379,10 @@ def precentProfile = jsonObject[&quot;COMMON_SETTINGS&quot;][&quot;RUN_SETTINGS&
 def profileName = jsonObject[&quot;COMMON_SETTINGS&quot;][&quot;RUN_SETTINGS&quot;][&quot;PROFILE_NAME&quot;]
  
 log.info(&quot;+------------------------------------------- PROFILE PARAMETERS ------------------------------------------+&quot;)
-log.info(&quot;PROFILE PATH:    ${profilePath}&quot;)
-log.info(&quot;PROFILE NAME:    ${profileName}&quot;)
-log.info(&quot;DEBUG_ENABLE:    ${debugEnable}&quot;)
-log.info(&quot;PERCENT_PROFILE: ${precentProfile}&quot;)
+log.info(&quot;|  PROFILE PATH:    ${profilePath}&quot;)
+log.info(&quot;|  PROFILE NAME:    ${profileName}&quot;)
+log.info(&quot;|  DEBUG_ENABLE:    ${debugEnable}&quot;)
+log.info(&quot;|  PERCENT_PROFILE: ${precentProfile}&quot;)
 
 if (debugEnable) {
 	log.info(&quot;+------------------------------------------------ PROFILE ------------------------------------------------+&quot;)
@@ -464,14 +406,22 @@ if (debugEnable) {
 		def profile = sb as String
 		props.put(&quot;${testName}_PACING&quot;, pacing)
 		props.put(testName, profile)
-		log.info(&quot;Test Name: ${testName} | Pacing: ${pacing} | Profile: ${profile}&quot;)
+		log.info(&quot;|  Test Name: ${testName} | Pacing: ${pacing} | Profile: ${profile}&quot;)
 	}
+}
+
+jsonObject[&quot;COMMON_SETTINGS&quot;][&quot;RUN_SETTINGS&quot;].each { key, value -&gt;
+	props.put(key, value)
+}
+
+jsonObject[&quot;COMMON_SETTINGS&quot;][&quot;PROPERTIES&quot;].each { key, value -&gt;
+	props.put(key, value)
 }
 
 props.put(&quot;PROFILE_NAME&quot;, profileName)</stringProp>
         </JSR223Sampler>
         <hashTree/>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Calc Profile">
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Calc Profile" enabled="true">
           <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
@@ -485,6 +435,7 @@ import java.util.Calendar
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.IOException
+
 
 def format(long timeSec) {
     long days = timeSec / 86_400
@@ -599,7 +550,7 @@ def logProfileDuration(scenarioName, profileData, logFileName, dateTimeNow, isLo
 }
 
 def debugEnable = System.getProperty(&quot;DEBUG_ENABLE&quot;, &quot;false&quot;) as Boolean
-def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profile/profile_test.json&quot;)
+def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/profile_test.json&quot;)
 
 def profileJsonFile = new File(profilePath)
 def jsonObject = new JsonSlurper().parse(profileJsonFile)
@@ -636,11 +587,10 @@ if (debugEnable == &quot;true&quot; || debugEnable) {
             logProfileDuration(testName, profileData, logFileName, DATE_TIME_NOW, false)
         }
     }
-}
-</stringProp>
+}</stringProp>
         </JSR223Sampler>
         <hashTree/>
-        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler">
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
           <boolProp name="displayJMeterProperties">true</boolProp>
           <boolProp name="displayJMeterVariables">true</boolProp>
           <boolProp name="displaySystemProperties">false</boolProp>
@@ -671,23 +621,8 @@ producerTest.close()</stringProp>
         </JSR223Sampler>
         <hashTree/>
       </hashTree>
-      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group" enabled="false">
-        <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="271069154">
-            <stringProp name="15">15</stringProp>
-            <stringProp name="0">0</stringProp>
-            <stringProp name="60">60</stringProp>
-            <stringProp name="180">180</stringProp>
-            <stringProp name="60">60</stringProp>
-          </collectionProp>
-          <collectionProp name="-1637862108">
-            <stringProp name="30">30</stringProp>
-            <stringProp name="240">240</stringProp>
-            <stringProp name="60">60</stringProp>
-            <stringProp name="180">180</stringProp>
-            <stringProp name="60">60</stringProp>
-          </collectionProp>
-        </collectionProp>
+      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group">
+        <collectionProp name="ultimatethreadgroupdata"/>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
           <intProp name="LoopController.loops">-1</intProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -695,7 +630,7 @@ producerTest.close()</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <stringProp name="UltimateThreadGroup.profile"></stringProp>
         <stringProp name="profile_value">spawn(30,0s,60s,180s,60s) spawn(60,240s,60s,180s,60s)</stringProp>
-        <stringProp name="profile">${__P(T1_AUTHORIZATION)}</stringProp>
+        <stringProp name="profile">T1_AUTHORIZATION</stringProp>
       </kg.apc.jmeter.threads.UltimateThreadGroup>
       <hashTree>
         <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Flow Control Action" enabled="true">
@@ -706,7 +641,7 @@ producerTest.close()</stringProp>
         <hashTree>
           <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
             <intProp name="calcMode">0</intProp>
-            <stringProp name="throughput">${__P(T1_AUTHORIZATION_PACING, 1.0)}</stringProp>
+            <stringProp name="throughput">${__P(T1_AUTHORIZATION_PACING,1.0)}</stringProp>
           </ConstantThroughputTimer>
           <hashTree/>
         </hashTree>
@@ -719,16 +654,8 @@ producerTest.close()</stringProp>
         </ModuleController>
         <hashTree/>
       </hashTree>
-      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group" enabled="false">
-        <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-1566990052">
-            <stringProp name="3">3</stringProp>
-            <stringProp name="0">0</stringProp>
-            <stringProp name="60">60</stringProp>
-            <stringProp name="180">180</stringProp>
-            <stringProp name="60">60</stringProp>
-          </collectionProp>
-        </collectionProp>
+      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group">
+        <collectionProp name="ultimatethreadgroupdata"/>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
           <intProp name="LoopController.loops">-1</intProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -736,7 +663,7 @@ producerTest.close()</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <stringProp name="UltimateThreadGroup.profile"></stringProp>
         <stringProp name="profile_value">${PROFILE_ONE}</stringProp>
-        <stringProp name="profile">${__P(T2_AUTHORIZATION)}</stringProp>
+        <stringProp name="profile">T2_AUTHORIZATION</stringProp>
       </kg.apc.jmeter.threads.UltimateThreadGroup>
       <hashTree>
         <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Flow Control Action" enabled="true">
@@ -747,7 +674,7 @@ producerTest.close()</stringProp>
         <hashTree>
           <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
             <intProp name="calcMode">0</intProp>
-            <stringProp name="throughput">${__P(T2_AUTHORIZATION_PACING, 1.0)}</stringProp>
+            <stringProp name="throughput">${__P(T2_AUTHORIZATION_PACING,1.0)}</stringProp>
           </ConstantThroughputTimer>
           <hashTree/>
         </hashTree>
@@ -764,12 +691,11 @@ producerTest.close()</stringProp>
       <hashTree/>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="TF#1 Authorization Admin" enabled="false"/>
       <hashTree>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="TC Users Authorization Admin 1" enabled="true">
-          <boolProp name="TransactionController.parent">true</boolProp>
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="uc_users_1_rest_authorization_admin" enabled="true">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
         </TransactionController>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="&lt;_/main_page/" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_1_rest_get_/main_page/" enabled="true">
             <stringProp name="HTTPSampler.path">/</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -789,7 +715,7 @@ producerTest.close()</stringProp>
             </elementProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="&gt;_/user/login/" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_2_rest_post_/user/login/" enabled="true">
             <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
             <stringProp name="HTTPSampler.path">/user/login/index.html</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -816,7 +742,7 @@ producerTest.close()</stringProp>
             </elementProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="&lt;_/user/logout/" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_3_rest_get_/user/logout/" enabled="true">
             <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
             <stringProp name="HTTPSampler.path">/user/logout.html</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -832,12 +758,11 @@ producerTest.close()</stringProp>
       </hashTree>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="TF#2 Authorization Admin" enabled="false"/>
       <hashTree>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="TC Users Authorization Admin 2" enabled="true">
-          <boolProp name="TransactionController.parent">true</boolProp>
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="uc_users_2_rest_authorization_admin" enabled="true">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
         </TransactionController>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="&lt;_/main_page/" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_1_rest_get_/main_page/" enabled="true">
             <stringProp name="HTTPSampler.path">/</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -857,7 +782,7 @@ producerTest.close()</stringProp>
             </elementProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="&gt;_/user/login/" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_2_rest_post_/user/login/" enabled="true">
             <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
             <stringProp name="HTTPSampler.path">/user/login/index.html</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -884,7 +809,7 @@ producerTest.close()</stringProp>
             </elementProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="&lt;_/user/logout/" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_3_rest_get_/user/logout/" enabled="true">
             <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
             <stringProp name="HTTPSampler.path">/user/logout.html</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -929,7 +854,7 @@ producerTest.send(record)</stringProp>
       </hashTree>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="_________DEBUG_________" enabled="false"/>
       <hashTree/>
-      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener" enabled="false">
+      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener">
         <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments">
           <collectionProp name="Arguments.arguments">
             <elementProp name="influxdbMetricsSender" elementType="Argument">
@@ -939,7 +864,7 @@ producerTest.send(record)</stringProp>
             </elementProp>
             <elementProp name="influxdbUrl" elementType="Argument">
               <stringProp name="Argument.name">influxdbUrl</stringProp>
-              <stringProp name="Argument.value">${__P(DATASOURCE_PROTOCOL,http)}://${__P(DATASOURCE_HOST,localhost)}:${__P(DATASOURCE_PORT,8086)}/write?db=${__P(INFLUXDB_DATABASE,jmeter_db)}</stringProp>
+              <stringProp name="Argument.value">${__P(DATASOURCE_PROTOCOL,http)}://${__P(DATASOURCE_HOST,localhost)}:${__P(DATASOURCE_PORT,8086)}/write?db=jmeter_db</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="application" elementType="Argument">
@@ -949,7 +874,7 @@ producerTest.send(record)</stringProp>
             </elementProp>
             <elementProp name="measurement" elementType="Argument">
               <stringProp name="Argument.name">measurement</stringProp>
-              <stringProp name="Argument.value">${__P(MEASUREMENT,jmeter)}</stringProp>
+              <stringProp name="Argument.value">jmeter</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="summaryOnly" elementType="Argument">
@@ -969,7 +894,7 @@ producerTest.send(record)</stringProp>
             </elementProp>
             <elementProp name="testTitle" elementType="Argument">
               <stringProp name="Argument.name">testTitle</stringProp>
-              <stringProp name="Argument.value">${__P(PROFILE_NAME, debug)}</stringProp>
+              <stringProp name="Argument.value">Test name</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="eventTags" elementType="Argument">
@@ -977,19 +902,19 @@ producerTest.send(record)</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
-            <elementProp name="profile_name" elementType="Argument">
-              <stringProp name="Argument.name">profile_name</stringProp>
-              <stringProp name="Argument.value">${__P(PROFILE_NAME, debug)}</stringProp>
+            <elementProp name="TAG_profile_name" elementType="Argument">
+              <stringProp name="Argument.name">TAG_profile_name</stringProp>
+              <stringProp name="Argument.value">${__P(PROFILE_NAME,debug)}</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
-            <elementProp name="system_name" elementType="Argument">
-              <stringProp name="Argument.name">system_name</stringProp>
-              <stringProp name="Argument.value">${__P{SYSTEM_NAME,default}}</stringProp>
+            <elementProp name="TAG_system_name" elementType="Argument">
+              <stringProp name="Argument.name">TAG_system_name</stringProp>
+              <stringProp name="Argument.value">${__P(SYSTEM_NAME,default)}</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
-            <elementProp name="generator" elementType="Argument">
-              <stringProp name="Argument.name">generator</stringProp>
-              <stringProp name="Argument.value">${__P(GENERATOR, localhost)}</stringProp>
+            <elementProp name="TAG_generator" elementType="Argument">
+              <stringProp name="Argument.name">TAG_generator</stringProp>
+              <stringProp name="Argument.value">${__P(GENERATOR,localhost)}</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -1035,7 +960,7 @@ producerTest.send(record)</stringProp>
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>

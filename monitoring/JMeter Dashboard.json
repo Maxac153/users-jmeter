@@ -1,35 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_JMETERDB",
-      "label": "jmeterdb",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "influxdb",
-      "pluginName": "InfluxDB"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "11.4.0"
-    },
-    {
-      "type": "datasource",
-      "id": "influxdb",
-      "name": "InfluxDB",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -49,23 +18,1036 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 3,
   "links": [],
   "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${data_source}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "Threads"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 0,
+        "y": 0
+      },
+      "id": 22,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "alias": "Threads",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "30s"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "maxAT"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "max"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "condition": "AND",
+              "key": "generator::tag",
+              "operator": "=~",
+              "value": "/^$generator$/"
+            },
+            {
+              "condition": "AND",
+              "key": "profile_name::tag",
+              "operator": "=~",
+              "value": "/^$profile_name$/"
+            },
+            {
+              "condition": "AND",
+              "key": "system_name::tag",
+              "operator": "=~",
+              "value": "/^$system_name$/"
+            }
+          ]
+        }
+      ],
+      "title": "Active Threads",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${data_source}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 10,
+        "y": 0
+      },
+      "id": 17,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "alias": "RPS OK",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "30s"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": [
+                  " / $send_interval"
+                ],
+                "type": "math"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "transaction::tag",
+              "operator": "=~",
+              "value": "/^ur.*/"
+            },
+            {
+              "condition": "AND",
+              "key": "statut::tag",
+              "operator": "=",
+              "value": "ok"
+            },
+            {
+              "condition": "AND",
+              "key": "generator::tag",
+              "operator": "=~",
+              "value": "/^$generator$/"
+            },
+            {
+              "condition": "AND",
+              "key": "profile_name::tag",
+              "operator": "=~",
+              "value": "/^$profile_name$/"
+            },
+            {
+              "condition": "AND",
+              "key": "system_name::tag",
+              "operator": "=~",
+              "value": "/^$system_name$/"
+            }
+          ]
+        },
+        {
+          "alias": "RPS KO",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "30s"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": [
+                  " / $send_interval"
+                ],
+                "type": "math"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "transaction::tag",
+              "operator": "=~",
+              "value": "/^ur.*/"
+            },
+            {
+              "condition": "AND",
+              "key": "statut::tag",
+              "operator": "=",
+              "value": "ko"
+            }
+          ]
+        },
+        {
+          "alias": "RPS Total",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "30s"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "C",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": [
+                  " / $send_interval"
+                ],
+                "type": "math"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "transaction::tag",
+              "operator": "=~",
+              "value": "/^ur.*/"
+            },
+            {
+              "condition": "AND",
+              "key": "statut::tag",
+              "operator": "=",
+              "value": "all"
+            }
+          ]
+        }
+      ],
+      "title": "UR RPS (Total)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${data_source}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "id": 19,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "alias": "",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "30s"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "jmeter",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT sum(\"OK\") / sum(\"ALL\")\nFROM (\n    SELECT sum(\"count\") as \"OK\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'ok' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n),\n(\n    SELECT sum(\"count\") as \"ALL\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'all' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "condition": "AND",
+              "key": "statut::tag",
+              "operator": "=",
+              "value": "ok"
+            }
+          ]
+        }
+      ],
+      "title": "UR SUCCESSFUL %",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${data_source}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 5
+      },
+      "id": 23,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "alias": "",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "30s"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "jmeter",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT sum(\"KO\") / sum(\"ALL\")\nFROM (\n    SELECT sum(\"count\") as \"KO\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'ko' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n),\n(\n    SELECT sum(\"count\") as \"ALL\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'all' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "condition": "AND",
+              "key": "statut::tag",
+              "operator": "=",
+              "value": "ok"
+            }
+          ]
+        }
+      ],
+      "title": "UR ERROR %",
+      "type": "gauge"
+    },
     {
       "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 10
       },
-      "id": 3,
+      "id": 18,
       "panels": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_JMETERDB}"
+            "uid": "${data_source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 24,
+            "x": 0,
+            "y": 11
+          },
+          "id": 21,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${data_source}"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "transaction::tag"
+                  ],
+                  "type": "tag"
+                },
+                {
+                  "params": [
+                    "statut::tag"
+                  ],
+                  "type": "tag"
+                }
+              ],
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "query": "SELECT sum(\"count\") FROM /^$measurement$/ WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter GROUP BY \"transaction\"::tag, \"statut\"::tag",
+              "rawQuery": true,
+              "refId": "A",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "count"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "sum"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "transaction::tag",
+                  "operator": "=~",
+                  "value": "/^ur.*/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
+                }
+              ]
+            }
+          ],
+          "title": "Errors Per Transaction",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "includeByName": {},
+                "indexByName": {
+                  "Time": 0,
+                  "statut": 2,
+                  "sum": 3,
+                  "transaction": 1
+                },
+                "renameByName": {
+                  "statut": "Status",
+                  "sum": "Sum",
+                  "transaction": "UR"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "responseCode"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 461
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "UR"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Response Message"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Response Code"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Sum"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 23
+          },
+          "id": 24,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${data_source}"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "responseCode::tag"
+                  ],
+                  "type": "tag"
+                },
+                {
+                  "params": [
+                    "responseMessage::tag"
+                  ],
+                  "type": "tag"
+                },
+                {
+                  "params": [
+                    "transaction::tag"
+                  ],
+                  "type": "tag"
+                }
+              ],
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "query": "SELECT sum(\"count\") FROM /^$measurement$/ WHERE (\"statut\"::tag = 'ko' OR \"statut\"::tag = 'all') AND $timeFilter GROUP BY \"transaction\", \"statut\"",
+              "rawQuery": false,
+              "refId": "A",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "count"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "sum"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "responseCode::tag",
+                  "operator": "!~",
+                  "value": "/^$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
+                }
+              ]
+            }
+          ],
+          "title": "Error Info",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "includeByName": {},
+                "indexByName": {
+                  "Time": 0,
+                  "responseCode": 3,
+                  "responseMessage": 2,
+                  "sum": 4,
+                  "transaction": 1
+                },
+                "renameByName": {
+                  "responseCode": "Response Code",
+                  "responseMessage": "Response Message",
+                  "sum": "Sum",
+                  "transaction": "UR"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Summery",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 10,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
           },
           "fieldConfig": {
             "defaults": {
@@ -110,8 +1092,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -124,12 +1105,12 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 8,
-            "w": 12,
+            "h": 9,
+            "w": 24,
             "x": 0,
-            "y": 1
+            "y": 135
           },
-          "id": 1,
+          "id": 11,
           "options": {
             "legend": {
               "calcs": [
@@ -142,17 +1123,18 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.4.0",
+          "pluginVersion": "12.0.2",
           "targets": [
             {
               "alias": "$tag_transaction",
               "datasource": {
                 "type": "influxdb",
-                "uid": "${DS_JMETERDB}"
+                "uid": "${data_source}"
               },
               "groupBy": [
                 {
@@ -203,24 +1185,56 @@
                 {
                   "key": "transaction::tag",
                   "operator": "=~",
-                  "value": "/^TC.+/"
+                  "value": "/^uc.*/"
                 },
                 {
                   "condition": "AND",
                   "key": "statut::tag",
                   "operator": "=",
                   "value": "ok"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
                 }
               ]
             }
           ],
-          "title": "RPS TC (OK)",
+          "title": "UC RPS",
           "type": "timeseries"
-        },
+        }
+      ],
+      "title": "UC RPS",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 9,
+      "panels": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_JMETERDB}"
+            "uid": "${data_source}"
           },
           "fieldConfig": {
             "defaults": {
@@ -265,26 +1279,21 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
+                    "color": "green"
                   }
                 ]
               },
-              "unit": "reqps"
+              "unit": "ms"
             },
             "overrides": []
           },
           "gridPos": {
             "h": 8,
             "w": 12,
-            "x": 12,
-            "y": 1
+            "x": 0,
+            "y": 199
           },
-          "id": 6,
+          "id": 14,
           "options": {
             "legend": {
               "calcs": [
@@ -297,17 +1306,18 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.4.0",
+          "pluginVersion": "12.0.2",
           "targets": [
             {
               "alias": "$tag_transaction",
               "datasource": {
                 "type": "influxdb",
-                "uid": "${DS_JMETERDB}"
+                "uid": "dfdsvs8mh4lq8d"
               },
               "groupBy": [
                 {
@@ -329,157 +1339,6 @@
                   "type": "fill"
                 }
               ],
-              "measurement": "jmeter",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "count"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      " / $send_interval"
-                    ],
-                    "type": "math"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "transaction::tag",
-                  "operator": "=~",
-                  "value": "/^TC.+/"
-                },
-                {
-                  "condition": "AND",
-                  "key": "statut::tag",
-                  "operator": "=",
-                  "value": "ko"
-                }
-              ]
-            }
-          ],
-          "title": "RPS TC (ERROR)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${data_source}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "ms"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 9
-          },
-          "id": 2,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.4.0",
-          "targets": [
-            {
-              "alias": "$tag_transaction",
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_JMETERDB}"
-              },
-              "groupBy": [
-                {
-                  "params": [
-                    "10s"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "transaction::tag"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
@@ -489,13 +1348,13 @@
                 [
                   {
                     "params": [
-                      "pct50.0"
+                      "pct99.0"
                     ],
                     "type": "field"
                   },
                   {
                     "params": [],
-                    "type": "max"
+                    "type": "mean"
                   }
                 ]
               ],
@@ -503,12 +1362,30 @@
                 {
                   "key": "transaction::tag",
                   "operator": "=~",
-                  "value": "/^TC.+/"
+                  "value": "/^uc.*/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
                 }
               ]
             }
           ],
-          "title": "50%",
+          "title": "UC 99%",
           "type": "timeseries"
         },
         {
@@ -559,8 +1436,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -572,9 +1448,9 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 9
+            "y": 199
           },
-          "id": 5,
+          "id": 13,
           "options": {
             "legend": {
               "calcs": [
@@ -587,161 +1463,23 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.4.0",
+          "pluginVersion": "12.0.2",
           "targets": [
             {
               "alias": "$tag_transaction",
               "datasource": {
                 "type": "influxdb",
-                "uid": "${DS_JMETERDB}"
+                "uid": "dfdsvs8mh4lq8d"
               },
               "groupBy": [
                 {
                   "params": [
-                    "10s"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "transaction::tag"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "pct90.0"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "max"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "transaction::tag",
-                  "operator": "=~",
-                  "value": "/^TC.+/"
-                }
-              ]
-            }
-          ],
-          "title": "90%",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${data_source}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "ms"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 17
-          },
-          "id": 4,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.4.0",
-          "targets": [
-            {
-              "alias": "$tag_transaction",
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_JMETERDB}"
-              },
-              "groupBy": [
-                {
-                  "params": [
-                    "10s"
+                    "30s"
                   ],
                   "type": "time"
                 },
@@ -773,7 +1511,7 @@
                   },
                   {
                     "params": [],
-                    "type": "max"
+                    "type": "mean"
                   }
                 ]
               ],
@@ -781,12 +1519,30 @@
                 {
                   "key": "transaction::tag",
                   "operator": "=~",
-                  "value": "/^TC.+/"
+                  "value": "/^uc.*/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
                 }
               ]
             }
           ],
-          "title": "95%",
+          "title": "UC 95%",
           "type": "timeseries"
         },
         {
@@ -837,8 +1593,164 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 216
+          },
+          "id": 15,
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "alias": "$tag_transaction",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "dfdsvs8mh4lq8d"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "30s"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "transaction::tag"
+                  ],
+                  "type": "tag"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "pct90.0"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "transaction::tag",
+                  "operator": "=~",
+                  "value": "/^uc.*/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
+                }
+              ]
+            }
+          ],
+          "title": "UC 90%",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
                   }
                 ]
               },
@@ -850,7 +1762,520 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 17
+            "y": 216
+          },
+          "id": 20,
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "alias": "$tag_transaction",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "dfdsvs8mh4lq8d"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "30s"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "transaction::tag"
+                  ],
+                  "type": "tag"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "pct50.0"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "transaction::tag",
+                  "operator": "=~",
+                  "value": "/^uc.*/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
+                }
+              ]
+            }
+          ],
+          "title": "UC 50%",
+          "type": "timeseries"
+        }
+      ],
+      "title": "UC Latency",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 8,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "reqps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 146
+          },
+          "id": 1,
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "alias": "$tag_transaction",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${data_source}"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "30s"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "transaction::tag"
+                  ],
+                  "type": "tag"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "jmeter",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "count"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  },
+                  {
+                    "params": [
+                      " / $send_interval"
+                    ],
+                    "type": "math"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "transaction::tag",
+                  "operator": "=~",
+                  "value": "/^ur.*/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "statut::tag",
+                  "operator": "=",
+                  "value": "ok"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
+                }
+              ]
+            }
+          ],
+          "title": "UR RPS (OK)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "reqps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 146
+          },
+          "id": 6,
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "alias": "$tag_transaction",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${data_source}"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "30s"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "transaction::tag"
+                  ],
+                  "type": "tag"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "jmeter",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "count"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  },
+                  {
+                    "params": [
+                      " / $send_interval"
+                    ],
+                    "type": "math"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "transaction::tag",
+                  "operator": "=~",
+                  "value": "/^ur.*/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "statut::tag",
+                  "operator": "=",
+                  "value": "ko"
+                }
+              ]
+            }
+          ],
+          "title": "UR RPS (ERROR)",
+          "type": "timeseries"
+        }
+      ],
+      "title": "UR RPS",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 3,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 156
           },
           "id": 7,
           "options": {
@@ -865,22 +2290,23 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.4.0",
+          "pluginVersion": "12.0.2",
           "targets": [
             {
               "alias": "$tag_transaction",
               "datasource": {
                 "type": "influxdb",
-                "uid": "${DS_JMETERDB}"
+                "uid": "dfdsvs8mh4lq8d"
               },
               "groupBy": [
                 {
                   "params": [
-                    "10s"
+                    "30s"
                   ],
                   "type": "time"
                 },
@@ -920,26 +2346,519 @@
                 {
                   "key": "transaction::tag",
                   "operator": "=~",
-                  "value": "/^TC.+/"
+                  "value": "/^ur.*/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
                 }
               ]
             }
           ],
-          "title": "99%",
+          "title": "UR 99%",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 156
+          },
+          "id": 4,
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "alias": "$tag_transaction",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "dfdsvs8mh4lq8d"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "30s"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "transaction::tag"
+                  ],
+                  "type": "tag"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "pct95.0"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "max"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "transaction::tag",
+                  "operator": "=~",
+                  "value": "/^ur.*/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
+                }
+              ]
+            }
+          ],
+          "title": "UR 95%",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 164
+          },
+          "id": 5,
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "alias": "$tag_transaction",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "dfdsvs8mh4lq8d"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "30s"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "transaction::tag"
+                  ],
+                  "type": "tag"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "pct90.0"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "max"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "transaction::tag",
+                  "operator": "=~",
+                  "value": "/^ur.*/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
+                }
+              ]
+            }
+          ],
+          "title": "UR 90%",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${data_source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 164
+          },
+          "id": 2,
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "alias": "$tag_transaction",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "dfdsvs8mh4lq8d"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "30s"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "transaction::tag"
+                  ],
+                  "type": "tag"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "pct50.0"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "max"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "transaction::tag",
+                  "operator": "=~",
+                  "value": "/^ur.*/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "generator::tag",
+                  "operator": "=~",
+                  "value": "/^$generator$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "profile_name::tag",
+                  "operator": "=~",
+                  "value": "/^$profile_name$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "system_name::tag",
+                  "operator": "=~",
+                  "value": "/^$system_name$/"
+                }
+              ]
+            }
+          ],
+          "title": "UR 50%",
           "type": "timeseries"
         }
       ],
-      "title": "Module USERS",
+      "title": "UR Latency",
       "type": "row"
     }
   ],
-  "refresh": "10s",
-  "schemaVersion": 40,
+  "preload": false,
+  "refresh": "30s",
+  "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
       {
-        "current": {},
+        "current": {
+          "text": "influxdb",
+          "value": "dfdsvs8mh4lq8d"
+        },
         "name": "data_source",
         "options": [],
         "query": "influxdb",
@@ -948,7 +2867,10 @@
         "type": "datasource"
       },
       {
-        "current": {},
+        "current": {
+          "text": "jmeter",
+          "value": "jmeter"
+        },
         "datasource": {
           "type": "influxdb",
           "uid": "${data_source}"
@@ -958,6 +2880,73 @@
         "options": [],
         "query": {
           "query": "SHOW MEASUREMENTS",
+          "refId": "InfluxVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "${data_source}"
+        },
+        "definition": "SHOW TAG VALUES WITH KEY = \"generator\"",
+        "description": "",
+        "includeAll": true,
+        "name": "generator",
+        "options": [],
+        "query": {
+          "query": "SHOW TAG VALUES WITH KEY = \"generator\"",
+          "refId": "InfluxVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "${data_source}"
+        },
+        "definition": "SHOW TAG VALUES WITH KEY = \"profile_name\"",
+        "description": "",
+        "includeAll": true,
+        "name": "profile_name",
+        "options": [],
+        "query": {
+          "query": "SHOW TAG VALUES WITH KEY = \"profile_name\"",
+          "refId": "InfluxVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "${data_source}"
+        },
+        "definition": "SHOW TAG VALUES WITH KEY = \"system_name\"",
+        "description": "",
+        "includeAll": true,
+        "name": "system_name",
+        "options": [],
+        "query": {
+          "query": "SHOW TAG VALUES WITH KEY = \"system_name\"",
           "refId": "InfluxVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -993,37 +2982,29 @@
             "selected": false,
             "text": "30",
             "value": "30"
-          },
-          {
-            "selected": false,
-            "text": "60",
-            "value": "60"
-          },
-          {
-            "selected": false,
-            "text": "120",
-            "value": "120"
-          },
-          {
-            "selected": false,
-            "text": "300",
-            "value": "300"
           }
         ],
-        "query": "5,10,15,30,60,120,300",
+        "query": "5,10,15,30",
         "refresh": 2,
         "type": "interval"
       }
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-1h",
     "to": "now"
   },
-  "timepicker": {},
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m"
+    ]
+  },
   "timezone": "browser",
   "title": "JMeter Dashboard",
-  "uid": "feagbni41uzggd",
-  "version": 2,
-  "weekStart": ""
+  "uid": "feagbni41uzggd2",
+  "version": 2
 }

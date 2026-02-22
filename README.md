@@ -5,6 +5,10 @@
 
 Пример тестового фреймворка для быстрого старта на JMeter. Сайт для тестирования (<a href="http://users.bugred.ru/">Users</a>).
 
+```bash
+docker stop prometheus grafana influxdb
+```
+
 ## Состав проекта
 
 - Папка (jenkins) с pipeline;
