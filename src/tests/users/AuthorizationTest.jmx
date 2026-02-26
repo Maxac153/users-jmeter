@@ -5,8 +5,6 @@
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
-      <boolProp name="TestPlan.functional_mode">false</boolProp>
-      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
     </TestPlan>
     <hashTree>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="_________CONFIG_________" enabled="false"/>
@@ -40,7 +38,7 @@
         </collectionProp>
       </HeaderManager>
       <hashTree/>
-      <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
+      <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager">
         <collectionProp name="CookieManager.cookies"/>
         <boolProp name="CookieManager.clearEachIteration">true</boolProp>
         <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
@@ -371,20 +369,21 @@ def getStepPace(double tps, double pacing) {
 }
 
 def debugEnable = System.getProperty(&quot;DEBUG_ENABLE&quot;, &quot;false&quot;) as Boolean
-def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/profile_test.json&quot;)
+def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/profile_test.json&quot;)
 
 def profileJsonFile = new File(profilePath)
 def jsonObject = new JsonSlurper().parse(profileJsonFile)
-def precentProfile = jsonObject[&quot;COMMON_SETTINGS&quot;][&quot;RUN_SETTINGS&quot;][&quot;PERCENT_PROFILE&quot;]
-def profileName = jsonObject[&quot;COMMON_SETTINGS&quot;][&quot;RUN_SETTINGS&quot;][&quot;PROFILE_NAME&quot;]
+def precentProfile = jsonObject[&quot;PROPERTIES&quot;][&quot;PERCENT_PROFILE&quot;]
+def profileName = jsonObject[&quot;PROPERTIES&quot;][&quot;PROFILE_NAME&quot;]
  
 log.info(&quot;+------------------------------------------- PROFILE PARAMETERS ------------------------------------------+&quot;)
-log.info(&quot;|  PROFILE PATH:    ${profilePath}&quot;)
-log.info(&quot;|  PROFILE NAME:    ${profileName}&quot;)
-log.info(&quot;|  DEBUG_ENABLE:    ${debugEnable}&quot;)
-log.info(&quot;|  PERCENT_PROFILE: ${precentProfile}&quot;)
+log.info(&quot;| SYSTEM PROPERTIES:&quot;)
+jsonObject[&quot;PROPERTIES&quot;].each { key, value -&gt;
+	log.info(&quot;|  ${key}: ${value}&quot;)
+	props.put(key, value)
+}
 
-if (debugEnable) {
+if (!debugEnable) {
 	log.info(&quot;+------------------------------------------------ PROFILE ------------------------------------------------+&quot;)
 	jsonObject[&quot;TESTS&quot;].each { testName, testParameters -&gt;
 		def duration = 0L
@@ -392,7 +391,7 @@ if (debugEnable) {
 	
 		def maxTps = testParameters[&quot;PROFILE&quot;][&quot;STEPS&quot;].min { it.TPS }[&quot;TPS&quot;] / precentProfile * 100.0
 		def pacing = getStepPace(maxTps, testParameters[&quot;PROFILE&quot;][&quot;PACING&quot;] as double)
-
+	
 		testParameters[&quot;PROFILE&quot;][&quot;STEPS&quot;].each { profile -&gt;
 			def threads = (int) Math.round(profile[&quot;TPS&quot;] / precentProfile * 100.0 * pacing)
 			def rampTime = (long) Math.round(profile[&quot;RAMP_TIME&quot;] * 60)
@@ -408,15 +407,18 @@ if (debugEnable) {
 		props.put(testName, profile)
 		log.info(&quot;|  Test Name: ${testName} | Pacing: ${pacing} | Profile: ${profile}&quot;)
 	}
+} else {
+	log.info(&quot;+---------------------------------------------- DEBUG PROFILE ---------------------------------------------+&quot;)
+	def profileDebugPath = System.getProperty(&quot;PROFILE_DEBUG_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/debug_test.json&quot;)
+	def profileDebugJsonFile = new File(profileDebugPath)
+	def jsonDebugObject = new JsonSlurper().parse(profileDebugJsonFile)
+	jsonDebugObject[&quot;TESTS&quot;].each { testName -&gt;
+		props.put(&quot;${testName}_PACING&quot;, 1.0)
+		props.put(testName, &quot;spawn(1,0s,0s,60s,0s)&quot;)
+		log.info(&quot;|  Test Name: ${testName} | Pacing: 1.0 | Profile: spawn(1,0s,0s,60s,0s)&quot;)
+	}
 }
-
-jsonObject[&quot;COMMON_SETTINGS&quot;][&quot;RUN_SETTINGS&quot;].each { key, value -&gt;
-	props.put(key, value)
-}
-
-jsonObject[&quot;COMMON_SETTINGS&quot;][&quot;PROPERTIES&quot;].each { key, value -&gt;
-	props.put(key, value)
-}
+log.info(&quot;+----------------------------------------------------------------------------------------------------------+&quot;)
 
 props.put(&quot;PROFILE_NAME&quot;, profileName)</stringProp>
         </JSR223Sampler>
@@ -550,14 +552,14 @@ def logProfileDuration(scenarioName, profileData, logFileName, dateTimeNow, isLo
 }
 
 def debugEnable = System.getProperty(&quot;DEBUG_ENABLE&quot;, &quot;false&quot;) as Boolean
-def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/profile_test.json&quot;)
+def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/profile_test.json&quot;)
 
 def profileJsonFile = new File(profilePath)
 def jsonObject = new JsonSlurper().parse(profileJsonFile)
 
-if (debugEnable == &quot;true&quot; || debugEnable) {
-    def precentProfile = jsonObject[&quot;COMMON_SETTINGS&quot;][&quot;RUN_SETTINGS&quot;][&quot;PERCENT_PROFILE&quot;]
-    def logFileName = jsonObject[&quot;COMMON_SETTINGS&quot;][&quot;RUN_SETTINGS&quot;][&quot;PROFILE_NAME&quot;] ?: &quot;profile&quot;
+if (!debugEnable) {
+    def precentProfile = jsonObject[&quot;PROPERTIES&quot;][&quot;PERCENT_PROFILE&quot;]
+    def logFileName = jsonObject[&quot;PROPERTIES&quot;][&quot;PROFILE_NAME&quot;] ?: &quot;profile&quot;
     def DATE_TIME_NOW = LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd_HH-mm-ss&quot;))
     def LINE_SEPARATOR = &quot;+---------------------------------------------------------------------------------------------------------+&quot;
     
@@ -590,7 +592,7 @@ if (debugEnable == &quot;true&quot; || debugEnable) {
 }</stringProp>
         </JSR223Sampler>
         <hashTree/>
-        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="DS - Profile" enabled="true">
           <boolProp name="displayJMeterProperties">true</boolProp>
           <boolProp name="displayJMeterVariables">true</boolProp>
           <boolProp name="displaySystemProperties">false</boolProp>
@@ -645,7 +647,7 @@ producerTest.close()</stringProp>
           </ConstantThroughputTimer>
           <hashTree/>
         </hashTree>
-        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MC Authorization Admin" enabled="true">
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MC Authorization Admin">
           <collectionProp name="ModuleController.node_path">
             <stringProp name="764597751">Test Plan</stringProp>
             <stringProp name="764597751">Test Plan</stringProp>
@@ -691,11 +693,11 @@ producerTest.close()</stringProp>
       <hashTree/>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="TF#1 Authorization Admin" enabled="false"/>
       <hashTree>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="uc_users_1_rest_authorization_admin" enabled="true">
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="uc_users_1_rest_authorization_admin">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
         </TransactionController>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_1_rest_get_/main_page/" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_1_rest_get_/main_page/">
             <stringProp name="HTTPSampler.path">/</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -758,7 +760,7 @@ producerTest.close()</stringProp>
       </hashTree>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="TF#2 Authorization Admin" enabled="false"/>
       <hashTree>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="uc_users_2_rest_authorization_admin" enabled="true">
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="uc_users_2_rest_authorization_admin">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
         </TransactionController>
         <hashTree>
@@ -854,7 +856,76 @@ producerTest.send(record)</stringProp>
       </hashTree>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="_________DEBUG_________" enabled="false"/>
       <hashTree/>
-      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener">
+      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener" enabled="false">
+        <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="influxdbMetricsSender" elementType="Argument">
+              <stringProp name="Argument.name">influxdbMetricsSender</stringProp>
+              <stringProp name="Argument.value">org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="influxdbUrl" elementType="Argument">
+              <stringProp name="Argument.name">influxdbUrl</stringProp>
+              <stringProp name="Argument.value">${__P(DATASOURCE_PROTOCOL,http)}://${__P(DATASOURCE_HOST,localhost)}:${__P(DATASOURCE_PORT,8086)}/write?db=jmeter_db</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="application" elementType="Argument">
+              <stringProp name="Argument.name">application</stringProp>
+              <stringProp name="Argument.value">application name</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="measurement" elementType="Argument">
+              <stringProp name="Argument.name">measurement</stringProp>
+              <stringProp name="Argument.value">jmeter</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="summaryOnly" elementType="Argument">
+              <stringProp name="Argument.name">summaryOnly</stringProp>
+              <stringProp name="Argument.value">false</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="samplersRegex" elementType="Argument">
+              <stringProp name="Argument.name">samplersRegex</stringProp>
+              <stringProp name="Argument.value">.*</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="percentiles" elementType="Argument">
+              <stringProp name="Argument.name">percentiles</stringProp>
+              <stringProp name="Argument.value">99;95;90;50</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="testTitle" elementType="Argument">
+              <stringProp name="Argument.name">testTitle</stringProp>
+              <stringProp name="Argument.value">Test name</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="eventTags" elementType="Argument">
+              <stringProp name="Argument.name">eventTags</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="TAG_profile_name" elementType="Argument">
+              <stringProp name="Argument.name">TAG_profile_name</stringProp>
+              <stringProp name="Argument.value">${__P(PROFILE_NAME,debug)}</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="TAG_system_name" elementType="Argument">
+              <stringProp name="Argument.name">TAG_system_name</stringProp>
+              <stringProp name="Argument.value">${__P(SYSTEM_NAME,default)}</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="TAG_generator" elementType="Argument">
+              <stringProp name="Argument.name">TAG_generator</stringProp>
+              <stringProp name="Argument.value">${__P(GENERATOR,localhost)}</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </elementProp>
+        <stringProp name="classname">org.apache.jmeter.visualizers.backend.influxdb.InfluxdbBackendListenerClient</stringProp>
+        <stringProp name="TestPlan.comments">Send metrics to InfluxDB</stringProp>
+      </BackendListener>
+      <hashTree/>
+      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener" enabled="false">
         <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments">
           <collectionProp name="Arguments.arguments">
             <elementProp name="influxdbMetricsSender" elementType="Argument">
@@ -960,7 +1031,7 @@ producerTest.send(record)</stringProp>
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
