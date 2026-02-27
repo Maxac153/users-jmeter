@@ -75,6 +75,6 @@
     "DATASOURCE_HOST": "localhost",
     "DATASOURCE_PORT": 8086,
     "PERCENT_PROFILE": 100.0,
-    "DEBUG_ENABLE": "false"
+    "DEBUG_ENABLE": "true"
   }
 }

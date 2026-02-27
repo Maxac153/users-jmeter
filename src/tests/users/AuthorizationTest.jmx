@@ -5,6 +5,8 @@
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
     </TestPlan>
     <hashTree>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="_________CONFIG_________" enabled="false"/>
@@ -50,7 +52,7 @@
         <boolProp name="CacheManager.controlledByThread">false</boolProp>
       </CacheManager>
       <hashTree/>
-      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults">
         <stringProp name="HTTPSampler.domain">${__P(APP_HOST,users.bugred.ru)}</stringProp>
         <stringProp name="HTTPSampler.port">${__P(APP_PORT,80)}</stringProp>
         <stringProp name="HTTPSampler.protocol">${__P(APP_PROTOCOL,http)}</stringProp>
@@ -309,6 +311,80 @@ for (i = 1; i &lt; stepsAdd; i++) {
           <stringProp name="scriptLanguage">groovy</stringProp>
         </JSR223Sampler>
         <hashTree/>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Calc Profile BAD!" enabled="false">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="script">import groovy.json.JsonSlurper
+
+
+def getStepPace(double tps, double pacing) {
+	double pace = 1 / tps
+	
+	if (tps &gt; 0 &amp;&amp; pace &gt; pacing) {
+		return Math.floor(pace)
+	} else if (tps &gt; 0 &amp;&amp; 1 - pace / pacing &lt; 0.96) {
+		return Math.floor(pace * Math.ceil(pacing / pace) * 3)
+	}
+	
+	return Math.floor(pacing)
+}
+
+def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/profile_test.json&quot;)
+
+def profileJsonFile = new File(profilePath)
+def jsonObject = new JsonSlurper().parse(profileJsonFile)
+def debugEnable = jsonObject[&quot;PROPERTIES&quot;][&quot;DEBUG_ENABLE&quot;]
+def precentProfile = jsonObject[&quot;PROPERTIES&quot;][&quot;PERCENT_PROFILE&quot;]
+def profileName = jsonObject[&quot;PROPERTIES&quot;][&quot;PROFILE_NAME&quot;]
+ 
+log.info(&quot;+------------------------------------------- PROFILE PARAMETERS ------------------------------------------+&quot;)
+log.info(&quot;| SYSTEM PROPERTIES:&quot;)
+jsonObject[&quot;PROPERTIES&quot;].each { key, value -&gt;
+	log.info(&quot;|  ${key}: ${value}&quot;)
+	props.put(key, value)
+}
+
+if (!debugEnable) {
+	log.info(&quot;+------------------------------------------------ PROFILE ------------------------------------------------+&quot;)
+	jsonObject[&quot;TESTS&quot;].each { testName, testParameters -&gt;
+		def duration = 0L
+	
+		def maxTps = testParameters[&quot;PROFILE&quot;][&quot;STEPS&quot;].min { it.TPS }[&quot;TPS&quot;] / precentProfile * 100.0
+		def pacing = getStepPace(maxTps, testParameters[&quot;PROFILE&quot;][&quot;PACING&quot;] as double)
+	
+		testParameters[&quot;PROFILE&quot;][&quot;STEPS&quot;].eachWithIndex { profile, index -&gt;
+			def threads = (int) Math.round(profile[&quot;TPS&quot;] / precentProfile * 100.0 * pacing)
+			def rampTime = (long) Math.round(profile[&quot;RAMP_TIME&quot;] * 60)
+			def holdTime = (long) Math.round(profile[&quot;HOLD_TIME&quot;] * 60)
+			log.info(threads as String)
+			props.put(&quot;${testName}_START_THREADS_COUNT_${index}&quot;, threads)
+			props.put(&quot;${testName}_INITIAL_DELAY_SEC_${index}&quot;, duration)
+			props.put(&quot;${testName}_STARTUP_TIME_SEC_${index}&quot;, rampTime)
+			props.put(&quot;${testName}_HOLD_LOAD_FOR_SEC_${index}&quot;, holdTime)
+			props.put(&quot;${testName}_SHUTDOWN_TIME_SEC_${index}&quot;, rampTime)
+			
+			duration += rampTime + holdTime
+		}
+		props.put(&quot;${testName}_PACING&quot;, pacing)
+	}
+} else {
+	log.info(&quot;+---------------------------------------------- DEBUG PROFILE ---------------------------------------------+&quot;)
+	def profileDebugPath = System.getProperty(&quot;PROFILE_DEBUG_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/debug_test.json&quot;)
+	def profileDebugJsonFile = new File(profileDebugPath)
+	def jsonDebugObject = new JsonSlurper().parse(profileDebugJsonFile)
+	jsonDebugObject[&quot;TESTS&quot;].each { testName -&gt;
+		props.put(&quot;${testName}_PACING&quot;, 1.0)
+		props.put(testName, &quot;spawn(1,0s,0s,60s,0s)&quot;)
+		log.info(&quot;|  Test Name: ${testName} | Pacing: 1.0 | Profile: spawn(1,0s,0s,60s,0s)&quot;)
+	}
+}
+log.info(&quot;+----------------------------------------------------------------------------------------------------------+&quot;)
+
+props.put(&quot;PROFILE_NAME&quot;, profileName)</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
         <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Kafka Producer - Test1" enabled="false">
           <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
@@ -339,7 +415,7 @@ def producerTest = new KafkaProducer&lt;String, String&gt;(kafkaProperties)
 props.put(&quot;PRODUCRE_TEST&quot;, producerTest)</stringProp>
         </JSR223Sampler>
         <hashTree/>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Clear Properties" enabled="true">
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Clear Properties">
           <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
@@ -348,7 +424,7 @@ props.put(&quot;PRODUCRE_TEST&quot;, producerTest)</stringProp>
 log.info(&quot;JMeter Clear Props And Vars&quot;)</stringProp>
         </JSR223Sampler>
         <hashTree/>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Calc Profile" enabled="true">
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Calc Profile">
           <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
@@ -368,22 +444,21 @@ def getStepPace(double tps, double pacing) {
 	return Math.floor(pacing)
 }
 
-def debugEnable = System.getProperty(&quot;DEBUG_ENABLE&quot;, &quot;false&quot;) as Boolean
 def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/profile_test.json&quot;)
-
 def profileJsonFile = new File(profilePath)
 def jsonObject = new JsonSlurper().parse(profileJsonFile)
+def debugEnable = System.getProperty(&quot;DEBUG_ENABLE&quot;, jsonObject[&quot;PROPERTIES&quot;][&quot;DEBUG_ENABLE&quot;])
 def precentProfile = jsonObject[&quot;PROPERTIES&quot;][&quot;PERCENT_PROFILE&quot;]
 def profileName = jsonObject[&quot;PROPERTIES&quot;][&quot;PROFILE_NAME&quot;]
  
 log.info(&quot;+------------------------------------------- PROFILE PARAMETERS ------------------------------------------+&quot;)
-log.info(&quot;| SYSTEM PROPERTIES:&quot;)
+log.info(&quot;| PROFILE PROPERTIES:&quot;)
 jsonObject[&quot;PROPERTIES&quot;].each { key, value -&gt;
 	log.info(&quot;|  ${key}: ${value}&quot;)
 	props.put(key, value)
 }
 
-if (!debugEnable) {
+if (debugEnable == &quot;false&quot;) {
 	log.info(&quot;+------------------------------------------------ PROFILE ------------------------------------------------+&quot;)
 	jsonObject[&quot;TESTS&quot;].each { testName, testParameters -&gt;
 		def duration = 0L
@@ -409,10 +484,7 @@ if (!debugEnable) {
 	}
 } else {
 	log.info(&quot;+---------------------------------------------- DEBUG PROFILE ---------------------------------------------+&quot;)
-	def profileDebugPath = System.getProperty(&quot;PROFILE_DEBUG_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/debug_test.json&quot;)
-	def profileDebugJsonFile = new File(profileDebugPath)
-	def jsonDebugObject = new JsonSlurper().parse(profileDebugJsonFile)
-	jsonDebugObject[&quot;TESTS&quot;].each { testName -&gt;
+	jsonObject[&quot;TESTS&quot;].each { testName, testParameters -&gt;
 		props.put(&quot;${testName}_PACING&quot;, 1.0)
 		props.put(testName, &quot;spawn(1,0s,0s,60s,0s)&quot;)
 		log.info(&quot;|  Test Name: ${testName} | Pacing: 1.0 | Profile: spawn(1,0s,0s,60s,0s)&quot;)
@@ -423,7 +495,7 @@ log.info(&quot;+----------------------------------------------------------------
 props.put(&quot;PROFILE_NAME&quot;, profileName)</stringProp>
         </JSR223Sampler>
         <hashTree/>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Calc Profile" enabled="true">
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Calc Profile">
           <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
@@ -551,13 +623,12 @@ def logProfileDuration(scenarioName, profileData, logFileName, dateTimeNow, isLo
     }
 }
 
-def debugEnable = System.getProperty(&quot;DEBUG_ENABLE&quot;, &quot;false&quot;) as Boolean
 def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/profile_test.json&quot;)
-
 def profileJsonFile = new File(profilePath)
 def jsonObject = new JsonSlurper().parse(profileJsonFile)
+def debugEnable = System.getProperty(&quot;DEBUG_ENABLE&quot;, jsonObject[&quot;PROPERTIES&quot;][&quot;DEBUG_ENABLE&quot;])
 
-if (!debugEnable) {
+if (debugEnable == &quot;false&quot;) {
     def precentProfile = jsonObject[&quot;PROPERTIES&quot;][&quot;PERCENT_PROFILE&quot;]
     def logFileName = jsonObject[&quot;PROPERTIES&quot;][&quot;PROFILE_NAME&quot;] ?: &quot;profile&quot;
     def DATE_TIME_NOW = LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd_HH-mm-ss&quot;))
@@ -624,18 +695,33 @@ producerTest.close()</stringProp>
         <hashTree/>
       </hashTree>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group">
-        <collectionProp name="ultimatethreadgroupdata"/>
+        <collectionProp name="ultimatethreadgroupdata">
+          <collectionProp name="1570893211">
+            <stringProp name="1665">45</stringProp>
+            <stringProp name="48">0</stringProp>
+            <stringProp name="1722">60</stringProp>
+            <stringProp name="48873">180</stringProp>
+            <stringProp name="1722">60</stringProp>
+          </collectionProp>
+          <collectionProp name="-1106065293">
+            <stringProp name="1815">90</stringProp>
+            <stringProp name="49710">240</stringProp>
+            <stringProp name="1722">60</stringProp>
+            <stringProp name="48873">180</stringProp>
+            <stringProp name="1722">60</stringProp>
+          </collectionProp>
+        </collectionProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
           <intProp name="LoopController.loops">-1</intProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <stringProp name="UltimateThreadGroup.profile"></stringProp>
-        <stringProp name="profile_value">spawn(30,0s,60s,180s,60s) spawn(60,240s,60s,180s,60s)</stringProp>
-        <stringProp name="profile">T1_AUTHORIZATION</stringProp>
+        <stringProp name="profile">spawn(15,1s,1s,1s,1s) spawn(40,1s,3s,1s,2s)</stringProp>
+        <stringProp name="THREADS_PROFILE">${__P(T1_AUTHORIZATION)}</stringProp>
       </kg.apc.jmeter.threads.UltimateThreadGroup>
       <hashTree>
-        <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Flow Control Action" enabled="true">
+        <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Flow Control Action">
           <intProp name="ActionProcessor.action">1</intProp>
           <intProp name="ActionProcessor.target">0</intProp>
           <stringProp name="ActionProcessor.duration">0</stringProp>
@@ -647,7 +733,7 @@ producerTest.close()</stringProp>
           </ConstantThroughputTimer>
           <hashTree/>
         </hashTree>
-        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MC Authorization Admin">
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MC Authorization Admin" enabled="true">
           <collectionProp name="ModuleController.node_path">
             <stringProp name="764597751">Test Plan</stringProp>
             <stringProp name="764597751">Test Plan</stringProp>
@@ -657,15 +743,30 @@ producerTest.close()</stringProp>
         <hashTree/>
       </hashTree>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group">
-        <collectionProp name="ultimatethreadgroupdata"/>
+        <collectionProp name="ultimatethreadgroupdata">
+          <collectionProp name="78483275">
+            <stringProp name="49">1</stringProp>
+            <stringProp name="48">0</stringProp>
+            <stringProp name="1722">60</stringProp>
+            <stringProp name="48873">180</stringProp>
+            <stringProp name="1722">60</stringProp>
+          </collectionProp>
+          <collectionProp name="1558887438">
+            <stringProp name="50">2</stringProp>
+            <stringProp name="49710">240</stringProp>
+            <stringProp name="1722">60</stringProp>
+            <stringProp name="48873">180</stringProp>
+            <stringProp name="1722">60</stringProp>
+          </collectionProp>
+        </collectionProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
           <intProp name="LoopController.loops">-1</intProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <stringProp name="UltimateThreadGroup.profile"></stringProp>
-        <stringProp name="profile_value">${PROFILE_ONE}</stringProp>
-        <stringProp name="profile">T2_AUTHORIZATION</stringProp>
+        <stringProp name="profile">spawn(15,1s,1s,1s,1s) spawn(40,1s,3s,1s,2s)</stringProp>
+        <stringProp name="THREADS_PROFILE">${__P(T2_AUTHORIZATION)}</stringProp>
       </kg.apc.jmeter.threads.UltimateThreadGroup>
       <hashTree>
         <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Flow Control Action" enabled="true">
@@ -684,7 +785,7 @@ producerTest.close()</stringProp>
           <collectionProp name="ModuleController.node_path">
             <stringProp name="764597751">Test Plan</stringProp>
             <stringProp name="764597751">Test Plan</stringProp>
-            <stringProp name="-52700055">TF#2 Authorization Admin</stringProp>
+            <stringProp name="-264050968">TF#1 Authorization Admin</stringProp>
           </collectionProp>
         </ModuleController>
         <hashTree/>
@@ -694,6 +795,73 @@ producerTest.close()</stringProp>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="TF#1 Authorization Admin" enabled="false"/>
       <hashTree>
         <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="uc_users_1_rest_authorization_admin">
+          <boolProp name="TransactionController.includeTimers">false</boolProp>
+        </TransactionController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_1_rest_get_/main_page/ ">
+            <stringProp name="HTTPSampler.path">/</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+	&quot;data&quot;: &quot;${__RandomString(5,abcdefg)}&quot;&#xd;
+}&#xd;
+</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_2_rest_post_/user/login/">
+            <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
+            <stringProp name="HTTPSampler.path">/user/login/index.html</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="login" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                  <stringProp name="Argument.name">login</stringProp>
+                  <stringProp name="Argument.value">manager@mail.ru</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                </elementProp>
+                <elementProp name="password" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.name">password</stringProp>
+                  <stringProp name="Argument.value">1</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_3_rest_get_/user/logout/">
+            <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
+            <stringProp name="HTTPSampler.path">/user/logout.html</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="TF#2 Authorization Admin" enabled="false"/>
+      <hashTree>
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="uc_users_2_rest_authorization_admin">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
         </TransactionController>
         <hashTree>
@@ -717,7 +885,7 @@ producerTest.close()</stringProp>
             </elementProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_2_rest_post_/user/login/" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_2_rest_post_/user/login/">
             <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
             <stringProp name="HTTPSampler.path">/user/login/index.html</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -744,74 +912,7 @@ producerTest.close()</stringProp>
             </elementProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_3_rest_get_/user/logout/" enabled="true">
-            <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
-            <stringProp name="HTTPSampler.path">/user/logout.html</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <stringProp name="HTTPSampler.method">GET</stringProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-          </HTTPSamplerProxy>
-          <hashTree/>
-        </hashTree>
-      </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="TF#2 Authorization Admin" enabled="false"/>
-      <hashTree>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="uc_users_2_rest_authorization_admin">
-          <boolProp name="TransactionController.includeTimers">false</boolProp>
-        </TransactionController>
-        <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_1_rest_get_/main_page/" enabled="true">
-            <stringProp name="HTTPSampler.path">/</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <stringProp name="HTTPSampler.method">GET</stringProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&#xd;
-	&quot;data&quot;: &quot;${__RandomString(5,abcdefg)}&quot;&#xd;
-}&#xd;
-</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-          </HTTPSamplerProxy>
-          <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_2_rest_post_/user/login/" enabled="true">
-            <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
-            <stringProp name="HTTPSampler.path">/user/login/index.html</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="login" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">true</boolProp>
-                  <stringProp name="Argument.name">login</stringProp>
-                  <stringProp name="Argument.value">manager@mail.ru</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                </elementProp>
-                <elementProp name="password" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.name">password</stringProp>
-                  <stringProp name="Argument.value">1</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-          </HTTPSamplerProxy>
-          <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_3_rest_get_/user/logout/" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_3_rest_get_/user/logout/">
             <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
             <stringProp name="HTTPSampler.path">/user/logout.html</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
