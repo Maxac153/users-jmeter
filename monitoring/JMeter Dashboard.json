@@ -468,6 +468,7 @@
           "color": {
             "mode": "thresholds"
           },
+          "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -529,7 +530,7 @@
           "measurement": "jmeter",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(\"OK\") / sum(\"ALL\")\nFROM (\n    SELECT sum(\"count\") as \"OK\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'ok' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n),\n(\n    SELECT sum(\"count\") as \"ALL\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'all' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n)",
+          "query": "SELECT sum(\"OK\") / sum(\"ALL\")\nFROM (\n    SELECT sum(\"count\") as \"OK\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'ok' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n),\n(\n    SELECT sum(\"count\") as \"ALL\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'ok' OR \"statut\"::tag = 'ko' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -570,6 +571,7 @@
           "color": {
             "mode": "thresholds"
           },
+          "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -631,7 +633,7 @@
           "measurement": "jmeter",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(\"KO\") / sum(\"ALL\")\nFROM (\n    SELECT sum(\"count\") as \"KO\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'ko' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n),\n(\n    SELECT sum(\"count\") as \"ALL\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'all' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n)",
+          "query": "SELECT sum(\"KO\") / sum(\"ALL\")\nFROM (\n    SELECT sum(\"count\") as \"KO\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'ko' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n),\n(\n    SELECT sum(\"count\") as \"ALL\"\n    FROM \"jmeter\"\n    WHERE (\"transaction\"::tag =~ /^ur.*/ AND \"statut\"::tag = 'ok' OR \"statut\"::tag = 'ko' AND \"generator\"::tag =~ /^$generator$/ AND \"profile_name\"::tag =~ /^$profile_name$/ AND \"system_name\"::tag =~ /^$system_name$/) AND $timeFilter\n    GROUP BY time(30s) fill(null)\n)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -912,7 +914,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 23
+            "y": 98
           },
           "id": 24,
           "options": {
@@ -1108,7 +1110,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 135
+            "y": 12
           },
           "id": 11,
           "options": {
@@ -1291,7 +1293,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 199
+            "y": 22
           },
           "id": 14,
           "options": {
@@ -1448,7 +1450,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 199
+            "y": 22
           },
           "id": 13,
           "options": {
@@ -1605,7 +1607,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 216
+            "y": 30
           },
           "id": 15,
           "options": {
@@ -1762,7 +1764,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 216
+            "y": 30
           },
           "id": 20,
           "options": {
@@ -1937,7 +1939,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 146
+            "y": 735
           },
           "id": 1,
           "options": {
@@ -2110,7 +2112,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 146
+            "y": 735
           },
           "id": 6,
           "options": {
@@ -2275,7 +2277,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 156
+            "y": 234
           },
           "id": 7,
           "options": {
@@ -2432,7 +2434,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 156
+            "y": 234
           },
           "id": 4,
           "options": {
@@ -2589,7 +2591,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 164
+            "y": 242
           },
           "id": 5,
           "options": {
@@ -2746,7 +2748,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 164
+            "y": 242
           },
           "id": 2,
           "options": {
@@ -2991,7 +2993,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -3006,5 +3008,5 @@
   "timezone": "browser",
   "title": "JMeter Dashboard",
   "uid": "feagbni41uzggd2",
-  "version": 2
+  "version": 6
 }

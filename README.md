@@ -99,6 +99,10 @@ docker stop prometheus grafana influxdb
 ### Запуск тестов через CLI
 
 ```bash
+jmeter -n -t ./users-jmeter/src/tests/users/AuthorizationTest.jmx -l ./AuthorizationTest.jtl
+```
+
+```bash
 jmeter -n -t ./MODULE_ONE/AuthorizationTest.jmx 
        -l ./AuthorizationTest.jtl 
        -e -o ./AuthorizationTest 

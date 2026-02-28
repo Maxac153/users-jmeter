@@ -5,13 +5,11 @@
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
-      <boolProp name="TestPlan.functional_mode">false</boolProp>
-      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
     </TestPlan>
     <hashTree>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="_________CONFIG_________" enabled="false"/>
       <hashTree/>
-      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager">
         <collectionProp name="HeaderManager.headers">
           <elementProp name="Referer" elementType="Header">
             <stringProp name="Header.name">Referer</stringProp>
@@ -40,23 +38,48 @@
         </collectionProp>
       </HeaderManager>
       <hashTree/>
-      <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager">
+      <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="false">
         <collectionProp name="CookieManager.cookies"/>
         <boolProp name="CookieManager.clearEachIteration">true</boolProp>
         <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
       </CookieManager>
       <hashTree/>
-      <CacheManager guiclass="CacheManagerGui" testclass="CacheManager" testname="HTTP Cache Manager" enabled="true">
+      <CacheManager guiclass="CacheManagerGui" testclass="CacheManager" testname="HTTP Cache Manager">
         <boolProp name="clearEachIteration">true</boolProp>
         <boolProp name="useExpires">true</boolProp>
         <boolProp name="CacheManager.controlledByThread">false</boolProp>
       </CacheManager>
       <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="APP_PROTOCOL" elementType="Argument">
+            <stringProp name="Argument.name">APP_PROTOCOL</stringProp>
+            <stringProp name="Argument.value">${__P(APP_PROTOCOL,http)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="APP_HOST" elementType="Argument">
+            <stringProp name="Argument.name">APP_HOST</stringProp>
+            <stringProp name="Argument.value">${__P(APP_HOST,users.bugred.ru)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="APP_PORT" elementType="Argument">
+            <stringProp name="Argument.name">APP_PORT</stringProp>
+            <stringProp name="Argument.value">${__P(APP_PORT,80)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="ENCODING" elementType="Argument">
+            <stringProp name="Argument.name">ENCODING</stringProp>
+            <stringProp name="Argument.value">${__P(ENCODING,UTF-8)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
       <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults">
-        <stringProp name="HTTPSampler.domain">${__P(APP_HOST,users.bugred.ru)}</stringProp>
-        <stringProp name="HTTPSampler.port">${__P(APP_PORT,80)}</stringProp>
-        <stringProp name="HTTPSampler.protocol">${__P(APP_PROTOCOL,http)}</stringProp>
-        <stringProp name="HTTPSampler.contentEncoding">${__P(ENCODING,UTF-8)}</stringProp>
+        <stringProp name="HTTPSampler.domain">${APP_HOST}</stringProp>
+        <stringProp name="HTTPSampler.port">${APP_PORT}</stringProp>
+        <stringProp name="HTTPSampler.protocol">${APP_PROTOCOL}</stringProp>
+        <stringProp name="HTTPSampler.contentEncoding">${ENCODING}</stringProp>
         <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
           <collectionProp name="Arguments.arguments"/>
         </elementProp>
@@ -415,7 +438,7 @@ def producerTest = new KafkaProducer&lt;String, String&gt;(kafkaProperties)
 props.put(&quot;PRODUCRE_TEST&quot;, producerTest)</stringProp>
         </JSR223Sampler>
         <hashTree/>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Clear Properties">
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Clear Properties" enabled="false">
           <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
@@ -432,26 +455,19 @@ log.info(&quot;JMeter Clear Props And Vars&quot;)</stringProp>
           <stringProp name="script">import groovy.json.JsonSlurper
 
 
-def getStepPace(double tps, double pacing) {
-	double pace = 1 / tps
-	
-	if (tps &gt; 0 &amp;&amp; pace &gt; pacing) {
-		return Math.floor(pace)
-	} else if (tps &gt; 0 &amp;&amp; 1 - pace / pacing &lt; 0.96) {
-		return Math.floor(pace * Math.ceil(pacing / pace) * 3)
-	}
-	
-	return Math.floor(pacing)
+// TODO Добавить функцию расчёта TPS для низко интенсивных сценариев
+def profilePath    = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/profile_test.json&quot;)
+def jsonObject     = new JsonSlurper().parse(new File(profilePath))
+def debugEnable    = System.getProperty(&quot;DEBUG_ENABLE&quot;, jsonObject[&quot;PROPERTIES&quot;][&quot;DEBUG_ENABLE&quot;])
+def precentProfile = jsonObject[&quot;PROPERTIES&quot;][&quot;PERCENT_PROFILE&quot;]
+def profileName    = jsonObject[&quot;PROPERTIES&quot;][&quot;PROFILE_NAME&quot;]
+
+log.info(&quot;+------------------------------------------- PROFILE PARAMETERS ------------------------------------------+&quot;)
+log.info(&quot;| JMETER VARIABLES:&quot;)
+vars.entrySet().each { entry -&gt;
+	log.info(&quot;|  ${entry.key}: ${entry.value}&quot;)
 }
 
-def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/profile_test.json&quot;)
-def profileJsonFile = new File(profilePath)
-def jsonObject = new JsonSlurper().parse(profileJsonFile)
-def debugEnable = System.getProperty(&quot;DEBUG_ENABLE&quot;, jsonObject[&quot;PROPERTIES&quot;][&quot;DEBUG_ENABLE&quot;])
-def precentProfile = jsonObject[&quot;PROPERTIES&quot;][&quot;PERCENT_PROFILE&quot;]
-def profileName = jsonObject[&quot;PROPERTIES&quot;][&quot;PROFILE_NAME&quot;]
- 
-log.info(&quot;+------------------------------------------- PROFILE PARAMETERS ------------------------------------------+&quot;)
 log.info(&quot;| PROFILE PROPERTIES:&quot;)
 jsonObject[&quot;PROPERTIES&quot;].each { key, value -&gt;
 	log.info(&quot;|  ${key}: ${value}&quot;)
@@ -463,12 +479,12 @@ if (debugEnable == &quot;false&quot;) {
 	jsonObject[&quot;TESTS&quot;].each { testName, testParameters -&gt;
 		def duration = 0L
 		def sb = new StringBuilder()
-	
+		
+		def pacing = testParameters[&quot;PROFILE&quot;][&quot;PACING&quot;]
 		def maxTps = testParameters[&quot;PROFILE&quot;][&quot;STEPS&quot;].min { it.TPS }[&quot;TPS&quot;] / precentProfile * 100.0
-		def pacing = getStepPace(maxTps, testParameters[&quot;PROFILE&quot;][&quot;PACING&quot;] as double)
 	
 		testParameters[&quot;PROFILE&quot;][&quot;STEPS&quot;].each { profile -&gt;
-			def threads = (int) Math.round(profile[&quot;TPS&quot;] / precentProfile * 100.0 * pacing)
+			def threads  = (int)  Math.round(profile[&quot;TPS&quot;] * pacing / precentProfile * 100.0)
 			def rampTime = (long) Math.round(profile[&quot;RAMP_TIME&quot;] * 60)
 			def holdTime = (long) Math.round(profile[&quot;HOLD_TIME&quot;] * 60)
 			
@@ -478,192 +494,192 @@ if (debugEnable == &quot;false&quot;) {
 		sb.deleteCharAt(sb.length() - 1)
 	
 		def profile = sb as String
-		props.put(&quot;${testName}_PACING&quot;, pacing)
+		def throughput = maxTps * 60 / (int) Math.round(maxTps * pacing / precentProfile * 100.0)
+		props.put(testName + &quot;_THROUGHPUT&quot;, throughput as String)
 		props.put(testName, profile)
-		log.info(&quot;|  Test Name: ${testName} | Pacing: ${pacing} | Profile: ${profile}&quot;)
+		log.info(&quot;|  Test Name: ${testName} | Pacing: ${pacing} | Throughput: ${throughput} | Profile: ${profile}&quot;)
 	}
 } else {
 	log.info(&quot;+---------------------------------------------- DEBUG PROFILE ---------------------------------------------+&quot;)
 	jsonObject[&quot;TESTS&quot;].each { testName, testParameters -&gt;
-		props.put(&quot;${testName}_PACING&quot;, 1.0)
 		props.put(testName, &quot;spawn(1,0s,0s,60s,0s)&quot;)
 		log.info(&quot;|  Test Name: ${testName} | Pacing: 1.0 | Profile: spawn(1,0s,0s,60s,0s)&quot;)
 	}
 }
-log.info(&quot;+----------------------------------------------------------------------------------------------------------+&quot;)
-
-props.put(&quot;PROFILE_NAME&quot;, profileName)</stringProp>
+log.info(&quot;+---------------------------------------------------------------------------------------------------------+&quot;)</stringProp>
         </JSR223Sampler>
         <hashTree/>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Calc Profile">
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Duration Test">
           <stringProp name="scriptLanguage">groovy</stringProp>
-          <stringProp name="parameters"></stringProp>
+          <stringProp name="parameters">${__time(yyyy-MM-dd_hh-mm-ss)}</stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="cacheKey">true</stringProp>
           <stringProp name="script">import groovy.json.JsonSlurper
+import groovy.json.JsonBuilder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.text.SimpleDateFormat
-import java.util.TimeZone
+import java.time.ZoneId
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
 import java.util.Calendar
-import java.io.BufferedWriter
-import java.io.FileWriter
-import java.io.IOException
 
 
-def format(long timeSec) {
-    long days = timeSec / 86_400
-    long remainder = timeSec % 86_400
-    long hours = remainder / 3_600
-    remainder %= 3_600
-    long min = remainder / 60
-    long sec = remainder % 60
+def formatDuration(Number timeSec) {
+    long seconds   = timeSec.longValue()
+    long days      = seconds / 86_400
+    long remainder = seconds % 86_400
+    long hours     = remainder / 3_600
+    remainder      %= 3_600
+    long min       = remainder / 60
+    long sec       = remainder % 60
     return String.format(&quot;%02d d. %02d h. %02d m. %02d s.&quot;, days, hours, min, sec)
 }
 
-def createFolderLogs() {
-    File directory = new File(&quot;./logs/profiles&quot;)
-    if (!directory.exists()) {
-        directory.mkdirs()
-    }
+def createLogsDir() {
+    Path logsDir = Paths.get(&quot;./logs/${args[0]}&quot;)
+    Files.createDirectories(logsDir)
 }
 
-def logProfileDuration(scenarioName, profileData, logFileName, dateTimeNow, isLongest = false) {
-    if (profileData?.STEPS) {
-        def LINE_SEPARATOR = &quot;+---------------------------------------------------------------------------------------------------------+&quot;
-        SimpleDateFormat sdfDateTime = new SimpleDateFormat(&quot;HH:mm:ss dd-MM-yyyy&quot;)
-        sdfDateTime.setTimeZone(TimeZone.getTimeZone(&quot;Europe/Moscow&quot;))
-
-        int durationProfile = profileData.STEPS.collect { step -&gt;
-            ((step[&quot;RAMP_TIME&quot;] as int) + (step[&quot;HOLD_TIME&quot;] as int)) * 60
-        }.sum()
-
-        Calendar calendarStartRumpUp = Calendar.getInstance()
-        Calendar calendarStart = Calendar.getInstance()
-        Calendar calendarEnd = Calendar.getInstance()
-
-        def firstStep = profileData.STEPS[0]
-        calendarStart.add(Calendar.SECOND, (firstStep[&quot;RAMP_TIME&quot;] as int) * 60)
-        calendarEnd.add(Calendar.SECOND, durationProfile)
-
-        long seconds = (calendarEnd.getTimeInMillis() - calendarStartRumpUp.getTimeInMillis()) / 1000
-        ArrayList&lt;String&gt; stepLogs = []
-        Calendar stepStart = (Calendar) calendarStartRumpUp.clone()
-
-        profileData.STEPS.eachWithIndex { step, i -&gt;
-            stepStart.add(Calendar.SECOND, (step[&quot;RAMP_TIME&quot;] as int) * 60)
-            Calendar stepEnd = (Calendar) stepStart.clone()
-            stepEnd.add(Calendar.SECOND, (step[&quot;HOLD_TIME&quot;] as int) * 60)
-            stepLogs &lt;&lt; String.format(&quot;from=%d&amp;to=%d&quot;, stepStart.getTime().getTime(), stepEnd.getTime().getTime())
-            stepStart = stepEnd
-        }
-        
-        if (isLongest) {
-            log.info(LINE_SEPARATOR)
-            log.info(&quot;|                                             Longest Scenario                                            |&quot;)
-        }
-        
-        log.info(LINE_SEPARATOR)
-        log.info(String.format(&quot;|  Scenario Name:       %-80.80s  |&quot;, scenarioName))
-        log.info(LINE_SEPARATOR)
-        log.info(String.format(&quot;|  Start Time:          %-80.80s  |&quot;, sdfDateTime.format(calendarStartRumpUp.getTime())))
-        log.info(LINE_SEPARATOR)
-        log.info(String.format(&quot;|  Scenario End Time:   %-80.80s  |&quot;, sdfDateTime.format(calendarEnd.getTime())))
-        log.info(LINE_SEPARATOR)
-        log.info(String.format(&quot;|  Total Duration:      %-80.80s  |&quot;, format(seconds)))
-        log.info(LINE_SEPARATOR)
-        log.info(String.format(&quot;|  Grafana (Full):      %-80.80s  |&quot;, &quot;from=&quot; + calendarStartRumpUp.getTime().getTime() + &quot;&amp;to=&quot; + calendarEnd.getTime().getTime()))
-        log.info(LINE_SEPARATOR)
-        log.info(String.format(&quot;|  Grafana (RampUp):    %-80.80s  |&quot;, &quot;from=&quot; + calendarStart.getTime().getTime() + &quot;&amp;to=&quot; + calendarEnd.getTime().getTime()))
-        log.info(LINE_SEPARATOR)
-        log.info(String.format(&quot;|  Pacing:              %-80.80s  |&quot;, profileData[&quot;PACING&quot;] ?: &quot;N/A&quot;))
-        log.info(LINE_SEPARATOR)
-        
-        createFolderLogs()
-        BufferedWriter fileWriter = null
-        try {
-            fileWriter = new BufferedWriter(new FileWriter(&quot;./logs/profiles/&quot; + logFileName + &quot;_profile_log_&quot; + dateTimeNow + &quot;.log&quot;, true))
-            
-            if (isLongest) {
-                fileWriter.write(LINE_SEPARATOR); fileWriter.newLine()
-                fileWriter.write(&quot;|                                             Longest Scenario                                            |&quot;)
-                fileWriter.newLine()
-                fileWriter.write(LINE_SEPARATOR); fileWriter.newLine()
-            }
-            
-            fileWriter.write(LINE_SEPARATOR); fileWriter.newLine()
-            fileWriter.write(String.format(&quot;|  Scenario Name:       %-80.80s  |&quot;, scenarioName)); fileWriter.newLine()
-            fileWriter.write(LINE_SEPARATOR); fileWriter.newLine()
-            fileWriter.write(String.format(&quot;|  Start Time:          %-80.80s  |&quot;, sdfDateTime.format(calendarStartRumpUp.getTime()))); fileWriter.newLine()
-            fileWriter.write(LINE_SEPARATOR); fileWriter.newLine()
-            fileWriter.write(String.format(&quot;|  Scenario End Time:   %-80.80s  |&quot;, sdfDateTime.format(calendarEnd.getTime()))); fileWriter.newLine()
-            fileWriter.write(LINE_SEPARATOR); fileWriter.newLine()
-            fileWriter.write(String.format(&quot;|  Total Duration:      %-80.80s  |&quot;, format(seconds))); fileWriter.newLine()
-            fileWriter.write(LINE_SEPARATOR); fileWriter.newLine()
-            fileWriter.write(String.format(&quot;|  Grafana (Full):      %-80.80s  |&quot;, &quot;from=&quot; + calendarStartRumpUp.getTime().getTime() + &quot;&amp;to=&quot; + calendarEnd.getTime().getTime())); fileWriter.newLine()
-            fileWriter.write(LINE_SEPARATOR); fileWriter.newLine()
-            fileWriter.write(String.format(&quot;|  Grafana (RampUp):    %-80.80s  |&quot;, &quot;from=&quot; + calendarStart.getTime().getTime() + &quot;&amp;to=&quot; + calendarEnd.getTime().getTime())); fileWriter.newLine()
-            fileWriter.write(LINE_SEPARATOR); fileWriter.newLine()
-            fileWriter.write(String.format(&quot;|  Pacing:              %-80.80s  |&quot;, profileData[&quot;PACING&quot;] ?: &quot;N/A&quot;)); fileWriter.newLine()
-            fileWriter.write(LINE_SEPARATOR); fileWriter.newLine()
-
-            stepLogs.eachWithIndex { stepLog, i -&gt;
-                def tps = profileData.STEPS[i][&quot;TPS&quot;]
-                log.info(String.format(&quot;|  Step #%d              %-80.80s  |&quot;, i + 1, stepLog))
-                log.info(LINE_SEPARATOR)
-                fileWriter.write(String.format(&quot;|  Step #%d              %-80.80s  |&quot;, i + 1, stepLog)); fileWriter.newLine()
-                fileWriter.write(LINE_SEPARATOR); fileWriter.newLine()
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage())
-            throw new RuntimeException(e)
-        } finally {
-            fileWriter?.close()
-        }
-    }
+def calculateProfileDuration(profileData) {
+    return profileData.STEPS.collect { step -&gt;
+        ((step[&quot;RAMP_TIME&quot;] as int) + (step[&quot;HOLD_TIME&quot;] as int)) * 60
+    }.sum() as long
 }
 
-def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/profile_test.json&quot;)
-def profileJsonFile = new File(profilePath)
-def jsonObject = new JsonSlurper().parse(profileJsonFile)
-def debugEnable = System.getProperty(&quot;DEBUG_ENABLE&quot;, jsonObject[&quot;PROPERTIES&quot;][&quot;DEBUG_ENABLE&quot;])
+def buildProfileInfo(profileData, calendarStartRampUp, calendarEnd) {
+    def stepLogs = []
+    def stepIntervals = [:]
+    def stepStart = calendarStartRampUp.clone()
+        
+    profileData.STEPS.eachWithIndex { step, i -&gt;
+        stepStart.add(Calendar.SECOND, (step[&quot;RAMP_TIME&quot;] as int) * 60)
+        def stepEnd = stepStart.clone()
+        stepEnd.add(Calendar.SECOND, (step[&quot;HOLD_TIME&quot;] as int) * 60)
+        def stepKey = &quot;step_${i + 1}&quot;
+        stepIntervals[stepKey] = &quot;from=${stepStart.time.time}&amp;to=${stepEnd.time.time}&quot;
+        stepLogs &lt;&lt; String.format(&quot;Step #%-3.3s            from=%d&amp;to=%d (TPS: %s)&quot;, i + 1, stepStart.time.time, stepEnd.time.time, step[&quot;TPS&quot;])
+        stepStart = stepEnd
+    }
+    
+    def moscowZone = ZoneId.of(&quot;Europe/Moscow&quot;)
+    def formatter = DateTimeFormatter.ofPattern(&quot;HH:mm:ss dd-MM-yyyy&quot;).withZone(moscowZone)
+    def startZdt = calendarStartRampUp.toInstant().atZone(moscowZone)
+    def endZdt = calendarEnd.toInstant().atZone(moscowZone)
+    def rampUpEndTime = startZdt.plusSeconds((profileData.STEPS[0][&quot;RAMP_TIME&quot;] as int) * 60).toInstant().toEpochMilli()
+    
+    return [
+        startTime: formatter.format(startZdt),
+        endTime: formatter.format(endZdt),
+        totalDuration: formatDuration((calendarEnd.time.time - calendarStartRampUp.time.time) / 1000L),
+        grafanaFull: &quot;from=${calendarStartRampUp.time.time}&amp;to=${calendarEnd.time.time}&quot;,
+        grafanaRampUp: &quot;from=${rampUpEndTime}&amp;to=${endZdt.toInstant().toEpochMilli()}&quot;,
+        pacing: profileData[&quot;PACING&quot;] ?: &quot;N/A&quot;,
+        steps: stepLogs,
+        stepIntervals: stepIntervals
+    ]
+}
 
-if (debugEnable == &quot;false&quot;) {
-    def precentProfile = jsonObject[&quot;PROPERTIES&quot;][&quot;PERCENT_PROFILE&quot;]
-    def logFileName = jsonObject[&quot;PROPERTIES&quot;][&quot;PROFILE_NAME&quot;] ?: &quot;profile&quot;
-    def DATE_TIME_NOW = LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd_HH-mm-ss&quot;))
+def logProfileInfo(scenarioName, profileInfo, logFileName, dateTimeNow, isLongest = false) {
     def LINE_SEPARATOR = &quot;+---------------------------------------------------------------------------------------------------------+&quot;
     
-    def longestScenario = null
-    def maxDuration = 0
+    def logLines = []
+    if (isLongest) {
+        logLines += [&quot;|                                             Longest Scenario&quot;, LINE_SEPARATOR]
+    }
     
-    jsonObject[&quot;TESTS&quot;].each { testName, testParameters -&gt;
-        def profileData = testParameters[&quot;PROFILE&quot;]
-        if (profileData?.STEPS) {
-            int duration = profileData.STEPS.collect { step -&gt;
-                ((step[&quot;RAMP_TIME&quot;] as int) + (step[&quot;HOLD_TIME&quot;] as int)) * 60
-            }.sum()
-            if (duration &gt; maxDuration) {
-                maxDuration = duration
-                longestScenario = [name: testName, data: profileData]
+    logLines += [
+        String.format(&quot;|  Scenario Name:       %-80.80s&quot;, scenarioName),
+        LINE_SEPARATOR,
+        String.format(&quot;|  Start Time:          %-80.80s&quot;, profileInfo.startTime),
+        LINE_SEPARATOR,
+        String.format(&quot;|  Scenario End Time:   %-80.80s&quot;, profileInfo.endTime),
+        LINE_SEPARATOR,
+        String.format(&quot;|  Total Duration:      %-80.80s&quot;, profileInfo.totalDuration),
+        LINE_SEPARATOR,
+        String.format(&quot;|  Grafana (Full):      %-80.80s&quot;, profileInfo.grafanaFull),
+        LINE_SEPARATOR,
+        String.format(&quot;|  Grafana (RampUp):    %-80.80s&quot;, profileInfo.grafanaRampUp),
+        LINE_SEPARATOR,
+        String.format(&quot;|  Pacing:              %-80.80s&quot;, profileInfo.pacing),
+        LINE_SEPARATOR
+    ]
+    
+    logLines.addAll(profileInfo.steps.collect { String.format(&quot;|  %-80.80s&quot;, it) })
+    logLines &lt;&lt; LINE_SEPARATOR
+    logLines.each { log.info(it) }
+    
+    createLogsDir()
+    def logPath = Paths.get(&quot;./logs/${args[0]}/${logFileName}_profile.log&quot;)
+    Files.write(logPath, logLines.collect { it }, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
+    
+    return profileInfo
+}
+
+def saveProfileJson(scenarioName, profileInfo, logFileName, dateTimeNow) {
+    createLogsDir()
+    def jsonPath = Paths.get(&quot;./logs/${args[0]}/${logFileName}_profile.json&quot;)
+    
+    def jsonData = [
+        &quot;grafana_full&quot;: profileInfo.grafanaFull,
+        &quot;grafana_ramp_up&quot;: profileInfo.grafanaRampUp,
+        &quot;steps&quot;: profileInfo.stepIntervals
+    ]
+    
+    def jsonBuilder = new JsonBuilder(jsonData)
+    Files.write(jsonPath, jsonBuilder.toPrettyString().bytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
+}
+
+def processProfiles() {
+    def profilePath = System.getProperty(&quot;PROFILE_PATH&quot;, &quot;users-jmeter/src/resources/profiles/users/profile_test.json&quot;)
+    def jsonObject = new JsonSlurper().parse(new File(profilePath))
+    def debugEnable = System.getProperty(&quot;DEBUG_ENABLE&quot;, jsonObject[&quot;PROPERTIES&quot;][&quot;DEBUG_ENABLE&quot;])
+    
+    if (debugEnable == &quot;false&quot;) {
+        def logFileName = jsonObject[&quot;PROPERTIES&quot;][&quot;PROFILE_NAME&quot;] ?: &quot;profile&quot;
+        def dateTimeNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd_HH-mm-ss&quot;))
+        
+        def longestDuration = 0L
+        def longestScenario = null
+        
+        jsonObject[&quot;TESTS&quot;].each { testName, testParameters -&gt;
+            def profileData = testParameters[&quot;PROFILE&quot;]
+            if (profileData?.STEPS) {
+                def duration = calculateProfileDuration(profileData)
+                if (duration &gt; longestDuration) {
+                    longestDuration = duration
+                    longestScenario = [name: testName, data: profileData]
+                }
+            }
+        }
+        
+        if (longestScenario) {
+            def calendarStartRampUp = Calendar.getInstance()
+            def calendarEnd = calendarStartRampUp.clone()
+            calendarEnd.add(Calendar.SECOND, (int) longestDuration)
+            
+            def profileInfo = logProfileInfo(longestScenario.name, buildProfileInfo(longestScenario.data, calendarStartRampUp, calendarEnd), logFileName, dateTimeNow, true)
+            saveProfileJson(longestScenario.name, profileInfo, logFileName, dateTimeNow)
+        }
+        
+        jsonObject[&quot;TESTS&quot;].each { testName, testParameters -&gt;
+            def profileData = testParameters[&quot;PROFILE&quot;]
+            if (profileData?.STEPS &amp;&amp; testName != longestScenario?.name) {
+                def calendarStartRampUp = Calendar.getInstance()
+                def calendarEnd = calendarStartRampUp.clone()
+                def duration = calculateProfileDuration(profileData)
+                
+                calendarEnd.add(Calendar.SECOND, (int) duration)
+                logProfileInfo(testName, buildProfileInfo(profileData, calendarStartRampUp, calendarEnd), logFileName, dateTimeNow, false)
             }
         }
     }
-    
-    if (longestScenario) {
-        logProfileDuration(longestScenario.name, longestScenario.data, logFileName, DATE_TIME_NOW, true)
-    }
-    
-    jsonObject[&quot;TESTS&quot;].each { testName, testParameters -&gt;
-        def profileData = testParameters[&quot;PROFILE&quot;]
-        if (profileData?.STEPS &amp;&amp; testName != longestScenario?.name) {
-            logProfileDuration(testName, profileData, logFileName, DATE_TIME_NOW, false)
-        }
-    }
-}</stringProp>
+}
+processProfiles()</stringProp>
         </JSR223Sampler>
         <hashTree/>
-        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="DS - Profile" enabled="true">
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="DS - Profile">
           <boolProp name="displayJMeterProperties">true</boolProp>
           <boolProp name="displayJMeterVariables">true</boolProp>
           <boolProp name="displaySystemProperties">false</boolProp>
@@ -696,15 +712,15 @@ producerTest.close()</stringProp>
       </hashTree>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="1570893211">
-            <stringProp name="1665">45</stringProp>
+          <collectionProp name="1480388153">
+            <stringProp name="1567">10</stringProp>
             <stringProp name="48">0</stringProp>
             <stringProp name="1722">60</stringProp>
             <stringProp name="48873">180</stringProp>
             <stringProp name="1722">60</stringProp>
           </collectionProp>
-          <collectionProp name="-1106065293">
-            <stringProp name="1815">90</stringProp>
+          <collectionProp name="-1306469350">
+            <stringProp name="1598">20</stringProp>
             <stringProp name="49710">240</stringProp>
             <stringProp name="1722">60</stringProp>
             <stringProp name="48873">180</stringProp>
@@ -727,13 +743,13 @@ producerTest.close()</stringProp>
           <stringProp name="ActionProcessor.duration">0</stringProp>
         </TestAction>
         <hashTree>
-          <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
+          <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer">
             <intProp name="calcMode">0</intProp>
-            <stringProp name="throughput">${__P(T1_AUTHORIZATION_PACING,1.0)}</stringProp>
+            <stringProp name="throughput">${__P(T1_AUTHORIZATION_THROUGHPUT,1.0)}</stringProp>
           </ConstantThroughputTimer>
           <hashTree/>
         </hashTree>
-        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MC Authorization Admin" enabled="true">
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MC Authorization Admin">
           <collectionProp name="ModuleController.node_path">
             <stringProp name="764597751">Test Plan</stringProp>
             <stringProp name="764597751">Test Plan</stringProp>
@@ -744,15 +760,15 @@ producerTest.close()</stringProp>
       </hashTree>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="78483275">
-            <stringProp name="49">1</stringProp>
+          <collectionProp name="79406796">
+            <stringProp name="50">2</stringProp>
             <stringProp name="48">0</stringProp>
             <stringProp name="1722">60</stringProp>
             <stringProp name="48873">180</stringProp>
             <stringProp name="1722">60</stringProp>
           </collectionProp>
-          <collectionProp name="1558887438">
-            <stringProp name="50">2</stringProp>
+          <collectionProp name="1564428564">
+            <stringProp name="56">8</stringProp>
             <stringProp name="49710">240</stringProp>
             <stringProp name="1722">60</stringProp>
             <stringProp name="48873">180</stringProp>
@@ -769,23 +785,23 @@ producerTest.close()</stringProp>
         <stringProp name="THREADS_PROFILE">${__P(T2_AUTHORIZATION)}</stringProp>
       </kg.apc.jmeter.threads.UltimateThreadGroup>
       <hashTree>
-        <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Flow Control Action" enabled="true">
+        <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Flow Control Action">
           <intProp name="ActionProcessor.action">1</intProp>
           <intProp name="ActionProcessor.target">0</intProp>
           <stringProp name="ActionProcessor.duration">0</stringProp>
         </TestAction>
         <hashTree>
-          <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
+          <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer">
             <intProp name="calcMode">0</intProp>
-            <stringProp name="throughput">${__P(T2_AUTHORIZATION_PACING,1.0)}</stringProp>
+            <stringProp name="throughput">${__P(T2_AUTHORIZATION_THROUGHPUT,1.0)}</stringProp>
           </ConstantThroughputTimer>
           <hashTree/>
         </hashTree>
-        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MC Authorization Admin" enabled="true">
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MC Authorization Admin">
           <collectionProp name="ModuleController.node_path">
             <stringProp name="764597751">Test Plan</stringProp>
             <stringProp name="764597751">Test Plan</stringProp>
-            <stringProp name="-264050968">TF#1 Authorization Admin</stringProp>
+            <stringProp name="-52700055">TF#2 Authorization Admin</stringProp>
           </collectionProp>
         </ModuleController>
         <hashTree/>
@@ -798,7 +814,7 @@ producerTest.close()</stringProp>
           <boolProp name="TransactionController.includeTimers">false</boolProp>
         </TransactionController>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_1_rest_get_/main_page/ ">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_1_rest_get_/main_page/ " enabled="true">
             <stringProp name="HTTPSampler.path">/</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -818,7 +834,7 @@ producerTest.close()</stringProp>
             </elementProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_2_rest_post_/user/login/">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_2_rest_post_/user/login/" enabled="true">
             <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
             <stringProp name="HTTPSampler.path">/user/login/index.html</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -845,7 +861,7 @@ producerTest.close()</stringProp>
             </elementProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_3_rest_get_/user/logout/">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_3_rest_get_/user/logout/" enabled="true">
             <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
             <stringProp name="HTTPSampler.path">/user/logout.html</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -861,11 +877,11 @@ producerTest.close()</stringProp>
       </hashTree>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="TF#2 Authorization Admin" enabled="false"/>
       <hashTree>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="uc_users_2_rest_authorization_admin">
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="uc_users_2_rest_authorization_admin" enabled="true">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
         </TransactionController>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_1_rest_get_/main_page/">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_1_rest_get_/main_page/" enabled="true">
             <stringProp name="HTTPSampler.path">/</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -885,7 +901,7 @@ producerTest.close()</stringProp>
             </elementProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_2_rest_post_/user/login/">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_2_rest_post_/user/login/" enabled="true">
             <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
             <stringProp name="HTTPSampler.path">/user/login/index.html</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -912,7 +928,7 @@ producerTest.close()</stringProp>
             </elementProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_3_rest_get_/user/logout/">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ur_users_3_rest_get_/user/logout/" enabled="true">
             <stringProp name="TestPlan.comments">Detected the start of a redirect chain</stringProp>
             <stringProp name="HTTPSampler.path">/user/logout.html</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -957,76 +973,7 @@ producerTest.send(record)</stringProp>
       </hashTree>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="_________DEBUG_________" enabled="false"/>
       <hashTree/>
-      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener" enabled="false">
-        <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments">
-          <collectionProp name="Arguments.arguments">
-            <elementProp name="influxdbMetricsSender" elementType="Argument">
-              <stringProp name="Argument.name">influxdbMetricsSender</stringProp>
-              <stringProp name="Argument.value">org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="influxdbUrl" elementType="Argument">
-              <stringProp name="Argument.name">influxdbUrl</stringProp>
-              <stringProp name="Argument.value">${__P(DATASOURCE_PROTOCOL,http)}://${__P(DATASOURCE_HOST,localhost)}:${__P(DATASOURCE_PORT,8086)}/write?db=jmeter_db</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="application" elementType="Argument">
-              <stringProp name="Argument.name">application</stringProp>
-              <stringProp name="Argument.value">application name</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="measurement" elementType="Argument">
-              <stringProp name="Argument.name">measurement</stringProp>
-              <stringProp name="Argument.value">jmeter</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="summaryOnly" elementType="Argument">
-              <stringProp name="Argument.name">summaryOnly</stringProp>
-              <stringProp name="Argument.value">false</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="samplersRegex" elementType="Argument">
-              <stringProp name="Argument.name">samplersRegex</stringProp>
-              <stringProp name="Argument.value">.*</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="percentiles" elementType="Argument">
-              <stringProp name="Argument.name">percentiles</stringProp>
-              <stringProp name="Argument.value">99;95;90;50</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="testTitle" elementType="Argument">
-              <stringProp name="Argument.name">testTitle</stringProp>
-              <stringProp name="Argument.value">Test name</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="eventTags" elementType="Argument">
-              <stringProp name="Argument.name">eventTags</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="TAG_profile_name" elementType="Argument">
-              <stringProp name="Argument.name">TAG_profile_name</stringProp>
-              <stringProp name="Argument.value">${__P(PROFILE_NAME,debug)}</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="TAG_system_name" elementType="Argument">
-              <stringProp name="Argument.name">TAG_system_name</stringProp>
-              <stringProp name="Argument.value">${__P(SYSTEM_NAME,default)}</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="TAG_generator" elementType="Argument">
-              <stringProp name="Argument.name">TAG_generator</stringProp>
-              <stringProp name="Argument.value">${__P(GENERATOR,localhost)}</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-          </collectionProp>
-        </elementProp>
-        <stringProp name="classname">org.apache.jmeter.visualizers.backend.influxdb.InfluxdbBackendListenerClient</stringProp>
-        <stringProp name="TestPlan.comments">Send metrics to InfluxDB</stringProp>
-      </BackendListener>
-      <hashTree/>
-      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener" enabled="false">
+      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener">
         <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments">
           <collectionProp name="Arguments.arguments">
             <elementProp name="influxdbMetricsSender" elementType="Argument">

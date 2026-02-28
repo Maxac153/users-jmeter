@@ -5,7 +5,7 @@
         "LOAD_GENERATOR": "localhost"
       },
       "PROFILE": {
-        "PACING": 15,
+        "PACING": 10,
         "STEPS": [
           {
             "TPS": 1.0,
@@ -39,31 +39,6 @@
           }
         ]
       }
-    },
-    "T3_AUTHORIZATION": {
-      "RUN": {
-        "LOAD_GENERATOR": "localhost"
-      },
-      "PROFILE": {
-        "PACING": 15,
-        "STEPS": [
-          {
-            "TPS": 0.1,
-            "RAMP_TIME": 1,
-            "HOLD_TIME": 3
-          },
-          {
-            "TPS": 5.0,
-            "RAMP_TIME": 1,
-            "HOLD_TIME": 3
-          },
-          {
-            "TPS": 0.2,
-            "RAMP_TIME": 1,
-            "HOLD_TIME": 3
-          }
-        ]
-      }
     }
   },
   "PROPERTIES": {
@@ -75,6 +50,6 @@
     "DATASOURCE_HOST": "localhost",
     "DATASOURCE_PORT": 8086,
     "PERCENT_PROFILE": 100.0,
-    "DEBUG_ENABLE": "true"
+    "DEBUG_ENABLE": "false"
   }
 }
